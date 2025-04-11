@@ -1,16 +1,16 @@
 package com.walkyriasys.pyme.facturacion.ui
 
+import PymeFacturacionNavHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
 import com.walkyriasys.pyme.facturacion.ui.theme.PymefacturacionTheme
 
 @Composable
 fun PymeFacturacionApp() {
     PymefacturacionTheme {
-        Text(
-            text = "Hello Pyme Facturacion!",
-            modifier = Modifier
-        )
+        val navController = rememberNavController()
+        PymeFacturacionNavHost(navController = navController)
     }
 }
