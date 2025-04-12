@@ -17,6 +17,8 @@ data class Product(
     val description: String?,
     @ColumnInfo(name = PRICE)
     val price: Int, // cents of currency
+    @ColumnInfo(name = PRODUCT_TYPE)
+    val productType: ProductType,
     @ColumnInfo(name = STOCK_QUANTITY)
     val stockQuantity: Int?
 ) {
@@ -28,5 +30,12 @@ data class Product(
         const val DESCRIPTION = "description"
         const val PRICE = "price"
         const val STOCK_QUANTITY = "stock_quantity"
+        const val PRODUCT_TYPE = "product_type"
     }
+}
+
+enum class ProductType {
+    Physical,
+    Digital,
+    Service
 }

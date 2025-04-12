@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "af7148c9e5666f56f2c4e8c3c065198a",
+    "identityHash": "470a4b7009b31ef68ad470103607e1e6",
     "entities": [
       {
         "tableName": "invoices",
@@ -164,7 +164,7 @@
       },
       {
         "tableName": "products",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uuid` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT, `price` INTEGER NOT NULL, `stock_quantity` INTEGER)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uuid` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT, `price` INTEGER NOT NULL, `product_type` TEXT NOT NULL, `stock_quantity` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
@@ -197,6 +197,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "productType",
+            "columnName": "product_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
             "fieldPath": "stockQuantity",
             "columnName": "stock_quantity",
             "affinity": "INTEGER",
@@ -216,7 +222,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'af7148c9e5666f56f2c4e8c3c065198a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '470a4b7009b31ef68ad470103607e1e6')"
     ]
   }
 }
