@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
@@ -29,13 +30,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.walkyriasys.pyme.facturacion.domain.database.models.ProductType
+import com.walkyriasys.pyme.facturacion.ui.LocalNavigator
 import com.walkyriasys.pyme.facturacion.ui.components.MoneyOutlinedTextField
+import com.walkyriasys.pyme.facturacion.ui.models.productItem
 import com.walkyriasys.pyme.facturacion.ui.theme.PymefacturacionTheme
+import com.walkyriasys.pyme.facturacion.ui.viewModels.AddEditProductViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddProductScreen(onProductAdded: (String, String, Int, Int?, ProductType) -> Unit = { _, _, _, _, _ -> }) {
+fun AddProductScreen(
+    navController: NavHostController
+) {
+    val navigator = LocalNavigator.current
+    val viewModel: AddEditProductViewModel = hiltViewModel(
+        key = "AddEditProductViewModel${navigator.hashCode()}",
+        creationCallback = { factory: AddEditProductViewModel.Factory ->
+            factory.create(navigator)
+        }
+    )
+
+
     var name by remember { mutableStateOf(TextFieldValue("")) }
     var description by remember { mutableStateOf(TextFieldValue("")) }
     var price by remember { mutableStateOf("") }
@@ -46,7 +64,15 @@ fun AddProductScreen(onProductAdded: (String, String, Int, Int?, ProductType) ->
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add Product") }
+                title = { Text("Add Product") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                }
             )
         }
     ) { paddingValues ->
@@ -95,7 +121,7 @@ fun AddProductScreen(onProductAdded: (String, String, Int, Int?, ProductType) ->
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
                 ) {
-                    ProductType.values().forEach { type ->
+                    ProductType.entries.forEach { type ->
                         DropdownMenuItem(
                             text = { Text(type.name) },
                             onClick = {
@@ -108,15 +134,6 @@ fun AddProductScreen(onProductAdded: (String, String, Int, Int?, ProductType) ->
             }
             // Conditionally show stock quantity field
             if (productType == ProductType.Physical) {
-//                OutlinedTextField(
-//                    value = stockQuantity,
-//                    onValueChange = { stockQuantity = it },
-//                    label = { Text("Stock Quantity") },
-//                    modifier = Modifier.fillMaxWidth(),
-//                    keyboardOptions = KeyboardOptions.Default.copy(
-//                        keyboardType = KeyboardType.Number
-//                    )
-//                )
                 QuantitySelector(
                     value = stockQuantity,
                     onValueChange = { newValue ->
@@ -128,9 +145,17 @@ fun AddProductScreen(onProductAdded: (String, String, Int, Int?, ProductType) ->
             }
             Button(
                 onClick = {
-                    val priceValue = price.toIntOrNull() ?: 0
                     val stockValue = if (productType == ProductType.Physical) stockQuantity else null
-                    onProductAdded(name.text, description.text, priceValue, stockValue, productType)
+                    val productItem = productItem(
+                        name = name.text,
+                        description = description.text,
+                        price = price,
+                        type = productType,
+                        stock = stockValue,
+                        uuid = viewModel::genNewUuid
+                    )
+
+                    viewModel.addProduct(productItem)
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -144,6 +169,6 @@ fun AddProductScreen(onProductAdded: (String, String, Int, Int?, ProductType) ->
 @Composable
 fun AddProductScreenPreview() {
     PymefacturacionTheme {
-        AddProductScreen()
+        AddProductScreen(rememberNavController())
     }
 }

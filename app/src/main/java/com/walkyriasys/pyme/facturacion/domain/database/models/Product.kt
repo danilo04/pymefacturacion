@@ -1,8 +1,8 @@
 package com.walkyriasys.pyme.facturacion.domain.database.models
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.ColumnInfo
 
 @Entity(tableName = Product.TABLE_NAME)
 data class Product(
@@ -16,7 +16,7 @@ data class Product(
     @ColumnInfo(name = DESCRIPTION)
     val description: String?,
     @ColumnInfo(name = PRICE)
-    val price: Int, // cents of currency
+    val price: Long, // cents of currency
     @ColumnInfo(name = PRODUCT_TYPE)
     val productType: ProductType,
     @ColumnInfo(name = STOCK_QUANTITY)

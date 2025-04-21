@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">pyme-facturacion</string>
+    <string name="products_title">Products</string>
+    <string name="add_product">Add Product</string>
 </resources>
