@@ -4,6 +4,7 @@ import android.content.Context
 import com.walkyriasys.pyme.facturacion.domain.database.PymeFacturacionDatabase
 import com.walkyriasys.pyme.facturacion.domain.database.dao.InvoiceDao
 import com.walkyriasys.pyme.facturacion.domain.database.dao.ProductDao
+import com.walkyriasys.pyme.facturacion.domain.database.dao.OrderDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,5 +29,10 @@ object DatabaseModule {
     @Provides
     fun providesInvoiceDao(pymeFacturacionDatabase: PymeFacturacionDatabase): InvoiceDao {
         return pymeFacturacionDatabase.invoiceDao()
+    }
+
+    @Provides
+    fun providesOrderDao(pymeFacturacionDatabase: PymeFacturacionDatabase): OrderDao {
+        return pymeFacturacionDatabase.orderDao()
     }
 }

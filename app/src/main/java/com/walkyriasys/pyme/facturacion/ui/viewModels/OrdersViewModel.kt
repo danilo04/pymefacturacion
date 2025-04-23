@@ -3,10 +3,8 @@ package com.walkyriasys.pyme.facturacion.ui.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dayoneapp.dayone.di.IOThreadDispatcher
-import com.walkyriasys.pyme.facturacion.domain.database.models.Product
-import com.walkyriasys.pyme.facturacion.domain.repositories.ProductsRepository
-import com.walkyriasys.pyme.facturacion.ui.models.ProductItem
-import com.walkyriasys.pyme.facturacion.ui.models.toProductItem
+import com.walkyriasys.pyme.facturacion.domain.database.dao.OrderDao
+import com.walkyriasys.pyme.facturacion.domain.database.models.Order
 import com.walkyriasys.pyme.utils.PagingDataSource
 import com.walkyriasys.pyme.utils.debounceAndSend
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,29 +15,29 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @HiltViewModel
-class ProductsViewModel @Inject constructor(
+class OrdersViewModel @Inject constructor(
     @IOThreadDispatcher private val ioThreadDispatcher: CoroutineDispatcher,
-    private val productsRepository: ProductsRepository
+    private val orderDao: OrderDao
 ) : ViewModel() {
 
     private var loadMoreRef: (() -> Unit)? = null
-    private val paginationSource: PagingDataSource<Unit, Product, UiState> = PagingDataSource(
+    private val paginationSource: PagingDataSource<Unit, Order, UiState> = PagingDataSource(
         viewModelScope = viewModelScope,
         backgroundDispatcher = ioThreadDispatcher,
         loadPage = { _, page ->
-            productsRepository.getProducts(page = page)
+            orderDao.getOrders(PAGE_SIZE, page * PAGE_SIZE)
         },
         builder = { pages ->
             pages.map { page ->
-                val productItems = page.data.map { it.toProductItem() }
+                val orders = page.data
 
                 loadMoreRef = page.loadMore
 
-                if (productItems.isEmpty()) {
+                if (orders.isEmpty()) {
                     UiState.Empty
                 } else {
                     UiState.Loaded(
-                        products = productItems
+                        orders = orders
                     ) {
                         loadMoreRef?.invoke()
                     }
@@ -63,8 +61,12 @@ class ProductsViewModel @Inject constructor(
         data object Loading : UiState
         data object Empty : UiState
         data class Loaded(
-            val products: List<ProductItem>,
+            val orders: List<Order>,
             val loadMore: () -> Unit
         ) : UiState
+    }
+    
+    companion object {
+        private const val PAGE_SIZE = 50
     }
 }

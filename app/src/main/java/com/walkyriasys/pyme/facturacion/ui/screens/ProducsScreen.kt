@@ -2,6 +2,7 @@ package com.walkyriasys.pyme.facturacion.ui.screens
 
 import Screens
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,15 +11,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -39,18 +43,32 @@ fun ProductsScreen(navController: NavController) {
     val viewModel = hiltViewModel<ProductsViewModel>()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle(ProductsViewModel.UiState.Loading)
 
-    ProductList(uiState.value) {
-        navController.navigate(Screens.AddProduct.route)
-    }
+    ProductList(
+        state = uiState.value,
+        onAddProduct = { navController.navigate(Screens.AddProduct.route) },
+        onBackPressed = { navController.popBackStack() }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ProductList(state: ProductsViewModel.UiState, onAddProduct: () -> Unit) {
+private fun ProductList(
+    state: ProductsViewModel.UiState,
+    onAddProduct: () -> Unit,
+    onBackPressed: () -> Unit,
+) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.products_title)) }
+                title = { Text(stringResource(R.string.products_title)) },
+                navigationIcon = {
+                    IconButton(onClick = onBackPressed) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                }
             )
         },
         floatingActionButton = {
@@ -85,6 +103,19 @@ private fun ProductList(state: ProductsViewModel.UiState, onAddProduct: () -> Un
 
             ProductsViewModel.UiState.Loading -> {
 
+            }
+
+            ProductsViewModel.UiState.Empty -> {
+                Box(
+                    modifier = Modifier.fillMaxSize().padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "There are no products yet.",
+                        fontWeight = FontWeight.Bold,
+                        color = androidx.compose.ui.graphics.Color.Gray
+                    )
+                }
             }
         }
     }
@@ -144,6 +175,7 @@ fun ProductsScreenPreview() {
 
         ProductList(
             state = ProductsViewModel.UiState.Loaded(products = mockProducts) {},
+            onBackPressed = {},
             onAddProduct = {}
         )
     }

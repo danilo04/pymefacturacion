@@ -1,5 +1,10 @@
 <resources>
-    <string name="app_name">pyme-facturacion</string>
+    <string name="app_name">Walkiria Invoices</string>
     <string name="products_title">Products</string>
     <string name="add_product">Add Product</string>
+
+    <!-- Types of products -->
+    <string name="physical">Physical</string>
+    <string name="service">Service</string>
+    <string name="digital">Digital</string>
 </resources>

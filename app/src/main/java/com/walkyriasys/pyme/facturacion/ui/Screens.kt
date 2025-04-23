@@ -6,6 +6,8 @@ enum class Screens(
     Products("products"),
     AddProduct("add_product"),
     ProductDetail("product_detail"),
+    Orders("orders"),
+    OrderDetail("order_detail"),
     Cart("cart"),
     Checkout("checkout"),
     OrderConfirmation("order_confirmation"),

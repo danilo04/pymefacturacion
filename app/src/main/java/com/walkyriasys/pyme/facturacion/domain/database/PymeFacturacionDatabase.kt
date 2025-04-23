@@ -8,19 +8,27 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.walkyriasys.pyme.facturacion.domain.database.dao.InvoiceDao
 import com.walkyriasys.pyme.facturacion.domain.database.dao.ProductDao
+import com.walkyriasys.pyme.facturacion.domain.database.dao.OrderDao
 import com.walkyriasys.pyme.facturacion.domain.database.models.Invoice
+import com.walkyriasys.pyme.facturacion.domain.database.models.Order
+import com.walkyriasys.pyme.facturacion.domain.database.models.OrderItem
 import com.walkyriasys.pyme.facturacion.domain.database.models.Product
 
 private const val DATABASE_VERSION = 1
 
 @Database(
-    entities = [Invoice::class, InvoiceItem::class, Product::class],
+    entities = [
+        Invoice::class, InvoiceItem::class,
+        Product::class,
+        Order::class, OrderItem::class
+    ],
     version = DATABASE_VERSION,
 )
-@TypeConverters(ProductTypeConverter::class)
+@TypeConverters(ProductTypeConverter::class, LocalDateTimeConverter::class)
 abstract class PymeFacturacionDatabase : RoomDatabase() {
     abstract fun invoiceDao(): InvoiceDao
     abstract fun productDao(): ProductDao
+    abstract fun orderDao(): OrderDao
 
     companion object {
         @Volatile

@@ -1,8 +1,10 @@
 package com.walkyriasys.pyme.facturacion.domain.database.models
 
+import androidx.annotation.StringRes
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.walkyriasys.pyme.facturacion.R
 
 @Entity(tableName = Product.TABLE_NAME)
 data class Product(
@@ -34,8 +36,8 @@ data class Product(
     }
 }
 
-enum class ProductType {
-    Physical,
-    Digital,
-    Service
+enum class ProductType(@StringRes val label: Int) {
+    Physical(R.string.physical),
+    Digital(R.string.digital),
+    Service(R.string.service)
 }

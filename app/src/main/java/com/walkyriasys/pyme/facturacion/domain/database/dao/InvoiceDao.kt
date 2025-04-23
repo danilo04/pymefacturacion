@@ -9,7 +9,6 @@ import com.walkyriasys.pyme.facturacion.domain.database.models.Invoice
 
 @Dao
 interface InvoiceDao {
-
     @Insert
     suspend fun insert(invoice: Invoice)
 
