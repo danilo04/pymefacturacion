@@ -1,5 +1,6 @@
 package com.walkyriasys.pyme.facturacion.ui.screens
 
+import Screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -65,7 +66,7 @@ fun OrdersScreen(navController: NavController) {
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* Handle add new order action */ }
+                onClick = { navController.navigate(Screens.AddOrder.route) }
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -77,7 +78,9 @@ fun OrdersScreen(navController: NavController) {
         when (val state = uiState.value) {
             OrdersViewModel.UiState.Empty -> {
                 Box(
-                    modifier = Modifier.fillMaxSize().padding(paddingValues),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(

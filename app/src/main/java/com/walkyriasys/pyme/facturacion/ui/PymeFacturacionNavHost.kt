@@ -4,10 +4,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.walkyriasys.pyme.facturacion.ui.screens.AddOrderScreen
 import com.walkyriasys.pyme.facturacion.ui.screens.AddProductScreen
 import com.walkyriasys.pyme.facturacion.ui.screens.HomeScreen
-import com.walkyriasys.pyme.facturacion.ui.screens.ProductsScreen
 import com.walkyriasys.pyme.facturacion.ui.screens.OrdersScreen
+import com.walkyriasys.pyme.facturacion.ui.screens.ProductsScreen
 
 @Composable
 fun PymeFacturacionNavHost(
@@ -31,6 +32,9 @@ fun PymeFacturacionNavHost(
         }
         composable(Screens.Orders.route) {
             OrdersScreen(navController)
+        }
+        composable(Screens.AddOrder.route) {
+            AddOrderScreen(navController)
         }
     }
 }
