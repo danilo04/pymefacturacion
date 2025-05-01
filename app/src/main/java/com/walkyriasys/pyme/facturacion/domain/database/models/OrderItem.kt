@@ -1,10 +1,10 @@
 package com.walkyriasys.pyme.facturacion.domain.database.models
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import androidx.room.ColumnInfo
+import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
+import androidx.room.PrimaryKey
 
 @Entity(
     tableName = OrderItem.TABLE_NAME,
@@ -41,7 +41,7 @@ data class OrderItem(
     @ColumnInfo(name = QUANTITY)
     val quantity: Int,
     @ColumnInfo(name = PRICE)
-    val price: Int, // cents of currency
+    val price: Long, // cents of currency
     @ColumnInfo(name = DISCOUNT)
     val discount: Int? // cents of currency
 ) {

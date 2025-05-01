@@ -45,7 +45,7 @@ class AddEditOrderViewModel @AssistedInject constructor(
                         ordersRepository.addOrderItem(item)
                     }
 
-                    SnackbarManager.showMessage("Order created successfully.")
+                    SnackbarManager.showMessage("Order created successfully for ${order.customerName}.")
                     navigator.goBack()
                 } else {
                     SnackbarManager.showMessage("Failed to create order.")

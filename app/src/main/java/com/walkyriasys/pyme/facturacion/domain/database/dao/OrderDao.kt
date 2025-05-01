@@ -49,6 +49,6 @@ interface OrderDao {
     suspend fun getOrderItems(orderId: Long): List<OrderItem>
 
     @Transaction
-    @Query("SELECT * FROM ${Order.TABLE_NAME} WHERE ${Order.STATUS} = :status")
-    fun getOrdersByStatus(status: Order.Status): Flow<List<Order>>
+    @Query("SELECT * FROM ${Order.TABLE_NAME} WHERE ${Order.STATUS} = :orderStatus")
+    fun getOrdersByStatus(orderStatus: Order.OrderStatus): Flow<List<Order>>
 }

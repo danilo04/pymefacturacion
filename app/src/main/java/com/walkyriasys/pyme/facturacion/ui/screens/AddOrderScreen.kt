@@ -1,6 +1,7 @@
 package com.walkyriasys.pyme.facturacion.ui.screens
 
 import QuantitySelector
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,24 +22,18 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults.TrailingIcon
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -56,15 +51,17 @@ import androidx.navigation.compose.rememberNavController
 import com.walkyriasys.pyme.facturacion.domain.database.models.Order
 import com.walkyriasys.pyme.facturacion.domain.database.models.OrderItem
 import com.walkyriasys.pyme.facturacion.ui.LocalNavigator
+import com.walkyriasys.pyme.facturacion.ui.components.DatetimePicker
+import com.walkyriasys.pyme.facturacion.ui.models.OrderItemEntry
 import com.walkyriasys.pyme.facturacion.ui.models.ProductItem
+import com.walkyriasys.pyme.facturacion.ui.models.majorToMinorUnits
 import com.walkyriasys.pyme.facturacion.ui.theme.PymefacturacionTheme
 import com.walkyriasys.pyme.facturacion.ui.viewModels.AddEditOrderViewModel
 import com.walkyriasys.pyme.facturacion.ui.viewModels.ProductsViewModel
-import java.math.BigDecimal
+import com.walkyriasys.pyme.utils.toMoneyFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -87,33 +84,43 @@ fun AddOrderScreen(
         productsViewModel.uiState.collectAsStateWithLifecycle(ProductsViewModel.UiState.Loading)
 
     // Order states
-    var selectedStatus by remember { mutableStateOf(Order.Status.PENDING) }
-    var statusExpanded by remember { mutableStateOf(false) }
-    var totalAmount by remember { mutableStateOf("0") }
+    var customerName by remember { mutableStateOf("") }
+    // var totalAmount by remember { mutableStateOf("0") }
 
-    // Date picker state
-    val initialDateMillis = LocalDate.now().plusDays(7)
-        .atStartOfDay(ZoneId.systemDefault())
-        .toInstant().toEpochMilli()
-    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = initialDateMillis)
-    var showDatePicker by remember { mutableStateOf(false) }
-    val selectedDate by remember {
+    // Order date picker state
+    val orderDatePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = LocalDate.now()
+            .atStartOfDay(ZoneId.systemDefault())
+            .toInstant().toEpochMilli()
+    )
+    var showOrderDatePicker by remember { mutableStateOf(false) }
+    val selectedOrderDate by remember {
         derivedStateOf {
-            datePickerState.selectedDateMillis?.let {
+            orderDatePickerState.selectedDateMillis?.let {
                 Instant.ofEpochMilli(it)
                     .atZone(ZoneId.systemDefault())
                     .toLocalDate()
                     .format(DateTimeFormatter.ISO_DATE)
-            } ?: LocalDate.now().plusDays(7).format(DateTimeFormatter.ISO_DATE)
+            } ?: LocalDate.now().format(DateTimeFormatter.ISO_DATE)
         }
     }
 
+    // Initialize with delivery date 7 days in the future
+    val initialDateTime = LocalDateTime.now().plusDays(7)
+    var selectedDateTime by remember { mutableStateOf(initialDateTime) }
+    
     // Order items state
     val orderItems = remember { mutableStateListOf<OrderItemEntry>() }
 
-    // Calculate total as items change
-    LaunchedEffect(orderItems) {
-        totalAmount = orderItems.sumOf { it.quantity * it.price.toLong() }.toString()
+    val totalAmount by remember {
+        derivedStateOf {
+            orderItems.sumOf { item ->
+                val price = item.price
+                val total = price * item.quantity.toBigDecimal()
+                Log.i("Test", "Total $total for item ${item.productName}")
+                total
+            }.toMoneyFormat()
+        }
     }
 
     Scaffold(
@@ -129,6 +136,70 @@ fun AddOrderScreen(
                     }
                 }
             )
+        },
+        bottomBar = {
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                tonalElevation = 8.dp,
+                shadowElevation = 8.dp
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    // Total amount display
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Total Amount:",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = totalAmount,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+
+                    // Submit button
+                    Button(
+                        onClick = {
+                            val orderDate = try {
+                                LocalDate.parse(selectedOrderDate)
+                            } catch (_: Exception) {
+                                LocalDate.now()
+                            }
+
+                            viewModel.addOrder(
+                                order = Order(
+                                    orderStatus = Order.OrderStatus.PENDING, // Default to PENDING
+                                    expectedDeliveryDate = selectedDateTime, // Use the datetime from our picker
+                                    totalAmount = totalAmount.toIntOrNull() ?: 0,
+                                    customerName = customerName,
+                                    createdAt = orderDate
+                                ),
+                                orderItems = orderItems.map { item ->
+                                    OrderItem(
+                                        id = 0,
+                                        uuid = viewModel.genNewUuid(),
+                                        orderId = 0, // This will be set by the viewModel
+                                        productId = item.productId,
+                                        quantity = item.quantity,
+                                        price = item.price.majorToMinorUnits(),
+                                        discount = null
+                                    )
+                                }
+                            )
+                        },
+                        enabled = orderItems.isNotEmpty()
+                                && customerName.isNotEmpty() && selectedDateTime != null,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Create Order")
+                    }
+                }
+            }
         }
     ) { paddingValues ->
         LazyColumn(
@@ -138,79 +209,62 @@ fun AddOrderScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Status selector
+            // Customer name
             item {
-                Text(
-                    text = "Order Status",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(bottom = 4.dp)
+                OutlinedTextField(
+                    value = customerName,
+                    onValueChange = { customerName = it },
+                    label = { Text("Customer Name") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
                 )
-                ExposedDropdownMenuBox(
-                    expanded = statusExpanded,
-                    onExpandedChange = { statusExpanded = !statusExpanded }
-                ) {
-                    TextField(
-                        value = selectedStatus.name,
-                        onValueChange = {},
-                        modifier = Modifier
-                            .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                            .fillMaxWidth(),
-                        readOnly = true,
-                        label = { Text("Status") },
-                        trailingIcon = { TrailingIcon(expanded = statusExpanded) }
-                    )
-                    ExposedDropdownMenu(
-                        expanded = statusExpanded,
-                        onDismissRequest = { statusExpanded = false }
-                    ) {
-                        Order.Status.entries.forEach { status ->
-                            DropdownMenuItem(
-                                text = { Text(status.name) },
-                                onClick = {
-                                    selectedStatus = status
-                                    statusExpanded = false
-                                }
+            }
+
+            // Order Date
+            item {
+                OutlinedTextField(
+                    value = selectedOrderDate,
+                    onValueChange = {},
+                    label = { Text("Order Date") },
+                    modifier = Modifier.fillMaxWidth(),
+                    readOnly = true,
+                    trailingIcon = {
+                        IconButton(onClick = { showOrderDatePicker = true }) {
+                            Icon(
+                                imageVector = Icons.Default.CalendarMonth,
+                                contentDescription = "Select order date"
                             )
                         }
+                    }
+                )
+
+                if (showOrderDatePicker) {
+                    DatePickerDialog(
+                        onDismissRequest = { showOrderDatePicker = false },
+                        confirmButton = {
+                            TextButton(onClick = { showOrderDatePicker = false }) {
+                                Text("OK")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showOrderDatePicker = false }) {
+                                Text("Cancel")
+                            }
+                        }
+                    ) {
+                        DatePicker(state = orderDatePickerState)
                     }
                 }
             }
 
             // Expected delivery date
             item {
-                OutlinedTextField(
-                    value = selectedDate,
-                    onValueChange = {},
-                    label = { Text("Expected Delivery Date") },
-                    modifier = Modifier.fillMaxWidth(),
-                    readOnly = true,
-                    trailingIcon = {
-                        IconButton(onClick = { showDatePicker = true }) {
-                            Icon(
-                                imageVector = Icons.Default.CalendarMonth,
-                                contentDescription = "Select date"
-                            )
-                        }
-                    }
+                DatetimePicker(
+                    initialDateTime = LocalDateTime.now(),
+                    formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm a"),
+                    onDateTimeSelected = { selectedDateTime = it },
+                    label = "Delivery Date and Time"
                 )
-
-                if (showDatePicker) {
-                    DatePickerDialog(
-                        onDismissRequest = { showDatePicker = false },
-                        confirmButton = {
-                            TextButton(onClick = { showDatePicker = false }) {
-                                Text("OK")
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = { showDatePicker = false }) {
-                                Text("Cancel")
-                            }
-                        }
-                    ) {
-                        DatePicker(state = datePickerState)
-                    }
-                }
             }
 
             // Products selection header
@@ -279,7 +333,7 @@ fun AddOrderScreen(
                                                         OrderItemEntry(
                                                             productId = product.id,
                                                             productName = product.name,
-                                                            price = product.price.toString(),
+                                                            price = product.price,
                                                             quantity = 1
                                                         )
                                                     )
@@ -315,69 +369,6 @@ fun AddOrderScreen(
                     }
                 }
             }
-
-            // Total amount display
-            item {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    tonalElevation = 2.dp
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Total Amount:",
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Text(
-                            text = "$${BigDecimal(if (totalAmount.isEmpty()) "0" else totalAmount).toDouble() / 100} USD",
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    }
-                }
-            }
-
-            // Submit button
-            item {
-                Button(
-                    onClick = {
-                        val deliveryDate = try {
-                            val date = LocalDate.parse(selectedDate)
-                            LocalDateTime.of(date, LocalTime.NOON)
-                        } catch (e: Exception) {
-                            LocalDateTime.now().plusDays(7)
-                        }
-
-                        viewModel.addOrder(
-                            order = Order(
-                                status = selectedStatus,
-                                expectedDeliveryDate = deliveryDate,
-                                totalAmount = totalAmount.toIntOrNull() ?: 0
-                            ),
-                            orderItems = orderItems.map { item ->
-                                OrderItem(
-                                    id = 0,
-                                    uuid = viewModel.genNewUuid(),
-                                    orderId = 0, // This will be set by the viewModel
-                                    productId = item.productId,
-                                    quantity = item.quantity,
-                                    price = item.price.toIntOrNull() ?: 0,
-                                    discount = null
-                                )
-                            }
-                        )
-                    },
-                    enabled = orderItems.isNotEmpty() && (totalAmount.toIntOrNull() ?: 0) > 0,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Create Order")
-                }
-            }
         }
     }
 }
@@ -405,7 +396,7 @@ fun OrderItemCard(
             ) {
                 Text(text = item.productName, style = MaterialTheme.typography.bodyLarge)
                 Text(
-                    text = "Price: $${BigDecimal(item.price).toDouble() / 100} USD",
+                    text = "Price: $${item.price}",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -447,7 +438,7 @@ fun ProductSelectionRow(
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(
-                text = "$${product.price} USD",
+                text = "$${product.price}",
                 style = MaterialTheme.typography.bodySmall
             )
         }
@@ -460,14 +451,6 @@ fun ProductSelectionRow(
         }
     }
 }
-
-// Helper data class for UI state
-data class OrderItemEntry(
-    val productId: Int,
-    val productName: String,
-    val price: String,
-    val quantity: Int
-)
 
 @Preview(showBackground = true)
 @Composable

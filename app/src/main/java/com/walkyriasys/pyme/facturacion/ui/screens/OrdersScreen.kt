@@ -33,11 +33,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.walkyriasys.pyme.facturacion.domain.database.models.Order
-import com.walkyriasys.pyme.facturacion.domain.database.models.Order.Status
+import com.walkyriasys.pyme.facturacion.domain.database.models.Order.OrderStatus
 import com.walkyriasys.pyme.facturacion.ui.components.OnBottomReached
 import com.walkyriasys.pyme.facturacion.ui.theme.PymefacturacionTheme
 import com.walkyriasys.pyme.facturacion.ui.viewModels.OrdersViewModel
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -134,7 +134,7 @@ private fun OrderRow(order: Order) {
             style = MaterialTheme.typography.bodyLarge
         )
         BasicText(
-            text = "Status: ${order.status}",
+            text = "Status: ${order.orderStatus}",
             style = MaterialTheme.typography.bodyMedium
         )
         BasicText(
@@ -156,21 +156,24 @@ fun OrdersScreenPreview() {
             listOf(
                 Order(
                     id = 1,
-                    status = Status.COMPLETED,
+                    orderStatus = OrderStatus.COMPLETED,
                     totalAmount = 15000,
-                    createdAt = LocalDateTime.now().minusDays(1)
+                    createdAt = LocalDate.now().minusDays(1),
+                    customerName = "John Doe"
                 ),
                 Order(
                     id = 2,
-                    status = Status.PENDING,
+                    orderStatus = OrderStatus.PENDING,
                     totalAmount = 25000,
-                    createdAt = LocalDateTime.now().minusDays(2)
+                    createdAt = LocalDate.now().minusDays(2),
+                    customerName = "John Doe"
                 ),
                 Order(
                     id = 3,
-                    status = Status.IN_PROGRESS,
+                    orderStatus = OrderStatus.IN_PROGRESS,
                     totalAmount = 10000,
-                    createdAt = LocalDateTime.now().minusDays(3)
+                    createdAt = LocalDate.now().minusDays(3),
+                    customerName = "John Doe"
                 ))
         ) {}
         OrdersList(state, PaddingValues(0.dp))
