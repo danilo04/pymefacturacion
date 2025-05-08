@@ -170,7 +170,7 @@ fun OrdersScreenPreview() {
                 ),
                 Order(
                     id = 3,
-                    orderStatus = OrderStatus.IN_PROGRESS,
+                    orderStatus = OrderStatus.DELIVERED,
                     totalAmount = 10000,
                     createdAt = LocalDate.now().minusDays(3),
                     customerName = "John Doe"

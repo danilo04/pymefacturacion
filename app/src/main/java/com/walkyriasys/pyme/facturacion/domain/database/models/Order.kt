@@ -34,7 +34,6 @@ data class Order(
 
     enum class OrderStatus {
         PENDING,
-        IN_PROGRESS,
         COMPLETED,
         DELIVERED
     }
