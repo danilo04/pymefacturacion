@@ -77,4 +77,7 @@ dependencies {
     // Compose Navigation
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
+
+    // External libraries
+    implementation(files("${rootProject.projectDir}/libs/btsdk.jar"))
 }
