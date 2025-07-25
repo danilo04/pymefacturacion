@@ -9,6 +9,7 @@ import com.walkyriasys.pyme.facturacion.ui.screens.AddProductScreen
 import com.walkyriasys.pyme.facturacion.ui.screens.BluetoothDeviceSelectionScreen
 import com.walkyriasys.pyme.facturacion.ui.screens.HomeScreen
 import com.walkyriasys.pyme.facturacion.ui.screens.OrdersScreen
+import com.walkyriasys.pyme.facturacion.ui.screens.PrintTestScreen
 import com.walkyriasys.pyme.facturacion.ui.screens.ProductsScreen
 import com.walkyriasys.pyme.facturacion.ui.screens.SettingsScreen
 
@@ -47,6 +48,9 @@ fun PymeFacturacionNavHost(
         }
         composable(Screens.PrinterSelection.route) {
             BluetoothDeviceSelectionScreen(navController)
+        }
+        composable(Screens.PrintTest.route) {
+            PrintTestScreen(navController)
         }
     }
 }

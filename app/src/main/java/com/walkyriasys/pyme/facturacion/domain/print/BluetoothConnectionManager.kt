@@ -17,11 +17,12 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.UUID
+import javax.inject.Inject
 import javax.inject.Singleton
 
 
 @Singleton
-class BluetoothConnectionManager(
+class BluetoothConnectionManager @Inject constructor(
     @ApplicationContext context: Context,
     @IOThreadDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
@@ -43,7 +44,7 @@ class BluetoothConnectionManager(
         }
     }
 
-    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
+//    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     suspend fun connect(address: String): BluetoothConnectionResult = withContext(ioDispatcher) {
         val adapter = bluetoothManager.adapter
 
@@ -103,11 +104,22 @@ class BluetoothConnectionManager(
             }
         }
         socket?.close()
+        setStatus(BluetoothConnectionStatus.DISCONNECTED)
     }
 
     suspend fun write(bytes: ByteArray) = withContext(ioDispatcher) {
         outStream?.write(bytes)
         outStream?.flush()
+    }
+
+    suspend fun sendData(data: ByteArray) = withContext(ioDispatcher) {
+        write(data)
+    }
+
+    suspend fun isConnected(): Boolean {
+        return statusMutex.withLock {
+            status == BluetoothConnectionStatus.CONNECTED
+        }
     }
 
     companion object {

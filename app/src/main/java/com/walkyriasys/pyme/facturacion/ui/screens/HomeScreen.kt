@@ -60,7 +60,7 @@ fun HomeScreen(navController: NavController) {
         DashboardItem(
             icon = Icons.IcReports,
             title = "Reports",
-            route = Screens.Orders.route  // You might want to create a Reports screen later
+            route = Screens.PrintTest.route
         ),
         DashboardItem(
             icon = Icons.IcSettings,

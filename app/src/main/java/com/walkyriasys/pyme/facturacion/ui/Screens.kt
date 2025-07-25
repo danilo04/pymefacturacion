@@ -14,4 +14,5 @@ enum class Screens(
     OrderConfirmation("order_confirmation"),
     Settings("settings"),
     PrinterSelection("printer_selection"),
+    PrintTest("print_test"),
 }
