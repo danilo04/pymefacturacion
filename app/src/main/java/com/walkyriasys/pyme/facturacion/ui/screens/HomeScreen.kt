@@ -65,7 +65,7 @@ fun HomeScreen(navController: NavController) {
         DashboardItem(
             icon = Icons.IcSettings,
             title = "Settings",
-            route = Screens.Orders.route  // You might want to create a Settings screen later
+            route = Screens.Settings.route
         )
     )
 

@@ -12,4 +12,6 @@ enum class Screens(
     Cart("cart"),
     Checkout("checkout"),
     OrderConfirmation("order_confirmation"),
+    Settings("settings"),
+    PrinterSelection("printer_selection"),
 }

@@ -1,5 +1,6 @@
 package com.walkyriasys.pyme.facturacion.ui.screens
 
+import Screens
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -31,7 +33,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.walkyriasys.pyme.facturacion.ui.viewModels.SettingsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,7 +45,14 @@ fun SettingsScreen(
     onPrinterSelected: (String) -> Unit,
     onBarcodeGenerationChanged: (Boolean) -> Unit
 ) {
+    val viewModel = hiltViewModel<SettingsViewModel>()
+    val selectedPrinterName by viewModel.selectedPrinterName.collectAsStateWithLifecycle()
     var isBarcodeGenerationEnabled by remember { mutableStateOf(false) }
+
+    // Refresh printer selection when returning to this screen
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        viewModel.refreshSelectedPrinter()
+    }
 
     Scaffold(
         topBar = {
@@ -66,7 +78,7 @@ fun SettingsScreen(
                     .fillMaxWidth()
                     .padding(bottom = 8.dp)
                     .clickable {
-                        navController.navigate("printer_selection")
+                        navController.navigate(Screens.PrinterSelection.route)
                     }
             ) {
                 Row(
@@ -83,10 +95,22 @@ fun SettingsScreen(
                             contentDescription = "Printer",
                             modifier = Modifier.size(24.dp)
                         )
-                        Text(
-                            "Connect Printer",
+                        Column(
                             modifier = Modifier.padding(start = 16.dp)
-                        )
+                        ) {
+                            Text("Connect Printer")
+                            selectedPrinterName?.let { printerName ->
+                                Text(
+                                    text = "Selected: $printerName",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            } ?: Text(
+                                text = "No printer selected",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowForward,
