@@ -80,4 +80,5 @@ dependencies {
 
     // External libraries
     implementation(files("${rootProject.projectDir}/libs/btsdk.jar"))
+    implementation(files("${rootProject.projectDir}/libs/zixng.jar"))
 }
