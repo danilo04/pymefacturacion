@@ -1,10 +1,12 @@
 package com.walkyriasys.pyme.facturacion.ui.screens
 
 import Screens
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,15 +16,10 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -44,6 +41,9 @@ import java.time.LocalDate
 fun OrdersScreen(navController: NavController) {
     val viewModel = hiltViewModel<OrdersViewModel>()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle(OrdersViewModel.UiState.Loading)
+    val selectedFilter by viewModel.selectedFilter.collectAsStateWithLifecycle()
+    
+    var showFilterMenu by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -61,6 +61,59 @@ fun OrdersScreen(navController: NavController) {
                             contentDescription = "Back"
                         )
                     }
+                },
+                actions = {
+                    IconButton(onClick = { showFilterMenu = true }) {
+                        Icon(
+                            imageVector = Icons.Default.FilterList,
+                            contentDescription = "Filter Orders"
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = showFilterMenu,
+                        onDismissRequest = { showFilterMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("All Orders") },
+                            onClick = {
+                                viewModel.setFilter(null)
+                                showFilterMenu = false
+                            },
+                            leadingIcon = if (selectedFilter == null) {
+                                { Icon(Icons.Default.Check, contentDescription = null) }
+                            } else null
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Pending") },
+                            onClick = {
+                                viewModel.setFilter(OrderStatus.PENDING)
+                                showFilterMenu = false
+                            },
+                            leadingIcon = if (selectedFilter == OrderStatus.PENDING) {
+                                { Icon(Icons.Default.Check, contentDescription = null) }
+                            } else null
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Completed") },
+                            onClick = {
+                                viewModel.setFilter(OrderStatus.COMPLETED)
+                                showFilterMenu = false
+                            },
+                            leadingIcon = if (selectedFilter == OrderStatus.COMPLETED) {
+                                { Icon(Icons.Default.Check, contentDescription = null) }
+                            } else null
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Delivered") },
+                            onClick = {
+                                viewModel.setFilter(OrderStatus.DELIVERED)
+                                showFilterMenu = false
+                            },
+                            leadingIcon = if (selectedFilter == OrderStatus.DELIVERED) {
+                                { Icon(Icons.Default.Check, contentDescription = null) }
+                            } else null
+                        )
+                    }
                 }
             )
         },
@@ -75,45 +128,109 @@ fun OrdersScreen(navController: NavController) {
             }
         }
     ) { paddingValues ->
-        when (val state = uiState.value) {
-            OrdersViewModel.UiState.Empty -> {
-                Box(
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            // Filter indicator
+            selectedFilter?.let { filter ->
+                Card(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "There are no orders.",
-                        fontWeight = FontWeight.Bold,
-                        color = androidx.compose.ui.graphics.Color.Gray
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
                     )
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Filtered by: ${filter.name}",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        TextButton(
+                            onClick = { viewModel.setFilter(null) }
+                        ) {
+                            Text("Clear Filter")
+                        }
+                    }
                 }
             }
-            is OrdersViewModel.UiState.Loaded -> {
-                OrdersList(state, paddingValues)
-            }
-            OrdersViewModel.UiState.Loading -> {
+            
+            when (val state = uiState.value) {
+                OrdersViewModel.UiState.Empty -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            val filterName = selectedFilter?.name
+                            Text(
+                                text = if (filterName != null) {
+                                    "No orders found with status: $filterName"
+                                } else {
+                                    "There are no orders."
+                                },
+                                fontWeight = FontWeight.Bold,
+                                color = androidx.compose.ui.graphics.Color.Gray
+                            )
+                            if (selectedFilter != null) {
+                                TextButton(
+                                    onClick = { viewModel.setFilter(null) }
+                                ) {
+                                    Text("Show All Orders")
+                                }
+                            }
+                        }
+                    }
+                }
+                is OrdersViewModel.UiState.Loaded -> {
+                    OrdersList(
+                        state = state,
+                        onOrderClick = { order ->
+                            navController.navigate("${Screens.OrderDetail.route}/${order.id}")
+                        }
+                    )
+                }
+                OrdersViewModel.UiState.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-private fun OrdersList(state: OrdersViewModel.UiState.Loaded, paddingValues: PaddingValues) {
+private fun OrdersList(
+    state: OrdersViewModel.UiState.Loaded,
+    onOrderClick: (Order) -> Unit
+) {
     val orders = state.orders
     val listState = rememberLazyListState()
     LazyColumn(
         state = listState,
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues)
-            .padding(16.dp),
+            .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(orders.size) { index ->
             val order = orders[index]
-            OrderRow(order)
+            OrderRow(
+                order = order,
+                onClick = { onOrderClick(order) }
+            )
         }
     }
 
@@ -123,27 +240,78 @@ private fun OrdersList(state: OrdersViewModel.UiState.Loaded, paddingValues: Pad
 }
 
 @Composable
-private fun OrderRow(order: Order) {
-    Column(
+private fun OrderRow(
+    order: Order,
+    onClick: () -> Unit
+) {
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .clickable { onClick() },
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        BasicText(
-            text = "Order ID: ${order.id}",
-            style = MaterialTheme.typography.bodyLarge
-        )
-        BasicText(
-            text = "Status: ${order.orderStatus}",
-            style = MaterialTheme.typography.bodyMedium
-        )
-        BasicText(
-            text = "Total Amount: ${order.totalAmount / 100.0} USD",
-            style = MaterialTheme.typography.bodyMedium
-        )
-        BasicText(
-            text = "Created At: ${order.createdAt}",
-            style = MaterialTheme.typography.bodySmall
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Order #${order.id}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                StatusChip(status = order.orderStatus)
+            }
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        text = "Customer: ${order.customerName}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        text = "Created: ${order.createdAt}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                
+                Text(
+                    text = "$${order.totalAmount / 100.0}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun StatusChip(status: OrderStatus) {
+    val (backgroundColor, contentColor) = when (status) {
+        OrderStatus.PENDING -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
+        OrderStatus.COMPLETED -> MaterialTheme.colorScheme.secondaryContainer to MaterialTheme.colorScheme.onSecondaryContainer
+        OrderStatus.DELIVERED -> MaterialTheme.colorScheme.primaryContainer to MaterialTheme.colorScheme.onPrimaryContainer
+    }
+    
+    Surface(
+        color = backgroundColor,
+        contentColor = contentColor,
+        shape = MaterialTheme.shapes.small
+    ) {
+        Text(
+            text = status.name,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            style = MaterialTheme.typography.labelSmall
         )
     }
 }
@@ -166,16 +334,18 @@ fun OrdersScreenPreview() {
                     orderStatus = OrderStatus.PENDING,
                     totalAmount = 25000,
                     createdAt = LocalDate.now().minusDays(2),
-                    customerName = "John Doe"
+                    customerName = "Jane Smith"
                 ),
                 Order(
                     id = 3,
                     orderStatus = OrderStatus.DELIVERED,
                     totalAmount = 10000,
                     createdAt = LocalDate.now().minusDays(3),
-                    customerName = "John Doe"
-                ))
+                    customerName = "Bob Johnson"
+                )
+            ),
+            selectedFilter = null
         ) {}
-        OrdersList(state, PaddingValues(0.dp))
+        OrdersList(state) { }
     }
 }

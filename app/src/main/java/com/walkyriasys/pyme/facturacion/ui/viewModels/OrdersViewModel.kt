@@ -5,13 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.dayoneapp.dayone.di.IOThreadDispatcher
 import com.walkyriasys.pyme.facturacion.domain.database.dao.OrderDao
 import com.walkyriasys.pyme.facturacion.domain.database.models.Order
-import com.walkyriasys.pyme.utils.PagingDataSource
-import com.walkyriasys.pyme.utils.debounceAndSend
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
+import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,41 +20,57 @@ class OrdersViewModel @Inject constructor(
     private val orderDao: OrderDao
 ) : ViewModel() {
 
-    private var loadMoreRef: (() -> Unit)? = null
-    private val paginationSource: PagingDataSource<Unit, Order, UiState> = PagingDataSource(
-        viewModelScope = viewModelScope,
-        backgroundDispatcher = ioThreadDispatcher,
-        loadPage = { _, page ->
-            orderDao.getOrders(PAGE_SIZE, page * PAGE_SIZE)
-        },
-        builder = { pages ->
-            pages.map { page ->
-                val orders = page.data
+    private val _selectedFilter = MutableStateFlow<Order.OrderStatus?>(null)
+    val selectedFilter: StateFlow<Order.OrderStatus?> = _selectedFilter.asStateFlow()
 
-                loadMoreRef = page.loadMore
-
-                if (orders.isEmpty()) {
-                    UiState.Empty
-                } else {
-                    UiState.Loaded(
-                        orders = orders
-                    ) {
-                        loadMoreRef?.invoke()
-                    }
-                }
-            }
-        }
-    )
-
-    @OptIn(FlowPreview::class)
-    val uiState: Flow<UiState> = paginationSource.uiState.debounceAndSend(
-        timeout = 200,
-        emittedItemCount = 40,
-        scope = viewModelScope
-    )
+    private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     init {
-        paginationSource.start(Unit)
+        loadOrders()
+    }
+
+    fun setFilter(status: Order.OrderStatus?) {
+        _selectedFilter.value = status
+        loadOrders()
+    }
+
+    private fun loadOrders() {
+        viewModelScope.launch {
+            _uiState.value = UiState.Loading
+            try {
+                val selectedStatus = _selectedFilter.value
+                if (selectedStatus != null) {
+                    orderDao.getOrdersByStatus(selectedStatus).collect { orders ->
+                        _uiState.value = if (orders.isEmpty()) {
+                            UiState.Empty
+                        } else {
+                            UiState.Loaded(
+                                orders = orders,
+                                selectedFilter = selectedStatus
+                            ) {
+                                // No load more for filtered results
+                            }
+                        }
+                    }
+                } else {
+                    orderDao.getOrders(PAGE_SIZE, 0).collect { orders ->
+                        _uiState.value = if (orders.isEmpty()) {
+                            UiState.Empty
+                        } else {
+                            UiState.Loaded(
+                                orders = orders,
+                                selectedFilter = null
+                            ) {
+                                // TODO: Implement load more for all orders
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                _uiState.value = UiState.Empty // Handle error as empty for now
+            }
+        }
     }
 
     sealed interface UiState {
@@ -62,6 +78,7 @@ class OrdersViewModel @Inject constructor(
         data object Empty : UiState
         data class Loaded(
             val orders: List<Order>,
+            val selectedFilter: Order.OrderStatus?,
             val loadMore: () -> Unit
         ) : UiState
     }

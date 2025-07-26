@@ -1,13 +1,16 @@
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.walkyriasys.pyme.facturacion.ui.screens.AddOrderScreen
 import com.walkyriasys.pyme.facturacion.ui.screens.AddProductScreen
 import com.walkyriasys.pyme.facturacion.ui.screens.BluetoothDeviceSelectionScreen
 import com.walkyriasys.pyme.facturacion.ui.screens.HomeScreen
+import com.walkyriasys.pyme.facturacion.ui.screens.OrderDetailsScreen
 import com.walkyriasys.pyme.facturacion.ui.screens.OrdersScreen
 import com.walkyriasys.pyme.facturacion.ui.screens.PrintTestScreen
 import com.walkyriasys.pyme.facturacion.ui.screens.ProductsScreen
@@ -38,6 +41,13 @@ fun PymeFacturacionNavHost(
         }
         composable(Screens.AddOrder.route) {
             AddOrderScreen(navController)
+        }
+        composable(
+            route = "${Screens.OrderDetail.route}/{orderId}",
+            arguments = listOf(navArgument("orderId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val orderId = backStackEntry.arguments?.getLong("orderId") ?: 0L
+            OrderDetailsScreen(navController, orderId)
         }
         composable(Screens.Settings.route) {
             SettingsScreen(
