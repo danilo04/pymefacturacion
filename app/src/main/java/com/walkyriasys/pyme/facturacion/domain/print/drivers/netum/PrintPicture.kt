@@ -1,10 +1,9 @@
-package com.walkyriasys.pyme.facturacion.domain.print
+package com.walkyriasys.pyme.facturacion.domain.print.drivers.netum
 
 import android.graphics.Bitmap
+import androidx.core.graphics.get
 import zj.com.customize.sdk.Other
 import kotlin.experimental.or
-import androidx.core.graphics.get
-
 
 object PrintPicture {
     /**

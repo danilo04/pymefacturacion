@@ -1,8 +1,7 @@
-package com.walkyriasys.pyme.facturacion.domain.print
+package com.walkyriasys.pyme.facturacion.domain.print.drivers.netum
 
 import zj.com.customize.sdk.Other
 import java.io.UnsupportedEncodingException
-
 
 object PrinterCommand {
     /**

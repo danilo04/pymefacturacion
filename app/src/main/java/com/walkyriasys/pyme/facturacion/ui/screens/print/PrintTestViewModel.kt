@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.walkyriasys.pyme.facturacion.domain.preferences.BluetoothPreferencesManager
 import com.walkyriasys.pyme.facturacion.domain.print.BluetoothConnectionManager
-import com.walkyriasys.pyme.facturacion.domain.print.PrinterService
+import com.walkyriasys.pyme.facturacion.domain.print.drivers.netum.PrinterService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

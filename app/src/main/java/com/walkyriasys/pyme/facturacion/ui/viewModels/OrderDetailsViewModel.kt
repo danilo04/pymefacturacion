@@ -5,9 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.walkyriasys.pyme.facturacion.domain.database.models.Order
 import com.walkyriasys.pyme.facturacion.domain.database.models.OrderItem
 import com.walkyriasys.pyme.facturacion.domain.repositories.OrdersRepository
-import com.walkyriasys.pyme.facturacion.domain.print.PrinterService
 import com.walkyriasys.pyme.facturacion.domain.print.BluetoothConnectionManager
 import com.walkyriasys.pyme.facturacion.domain.preferences.BluetoothPreferencesManager
+import com.walkyriasys.pyme.facturacion.domain.print.DocumentPrinter
+import com.walkyriasys.pyme.facturacion.domain.print.PrintResult
+import com.walkyriasys.pyme.facturacion.domain.print.documents.QRCodeReceiptDocument
+import com.walkyriasys.pyme.facturacion.domain.print.drivers.PrinterDriver
+import com.walkyriasys.pyme.facturacion.domain.print.drivers.netum.NetumPrinterDriver
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -21,9 +25,7 @@ import java.time.format.DateTimeFormatter
 @HiltViewModel(assistedFactory = OrderDetailsViewModel.Factory::class)
 class OrderDetailsViewModel @AssistedInject constructor(
     private val ordersRepository: OrdersRepository,
-    private val printerService: PrinterService,
-    private val bluetoothConnectionManager: BluetoothConnectionManager,
-    private val bluetoothPreferencesManager: BluetoothPreferencesManager,
+    private val netumPrinterDriver: NetumPrinterDriver,
     @Assisted private val orderId: Long
 ) : ViewModel() {
 
@@ -80,71 +82,45 @@ class OrderDetailsViewModel @AssistedInject constructor(
             viewModelScope.launch {
                 try {
                     val order = currentState.order
+                    val orderItems = currentState.orderItems
+
                     
-                    // Check if printer is connected, if not, try to connect
-                    if (!bluetoothConnectionManager.isConnected()) {
-                        val savedAddress = bluetoothPreferencesManager.getSelectedBluetoothDeviceAddress()
-                        
-                        if (savedAddress == null) {
+                    // Create QRCodeReceiptDocument
+                    val qrCodeDocument = QRCodeReceiptDocument(
+                        order = order,
+                        orderItems = orderItems,
+                        contactPhone = "123-456-7890", // Add your business phone
+                        contactEmail = "info@lavanderiawalki.com" // Add your business email
+                    )
+                    
+                    // Print using DocumentPrinter
+                    val result = DocumentPrinter.print(
+                        printer = netumPrinterDriver,
+                        documentToPrint = qrCodeDocument
+                    )
+                    
+                    when {
+                        result.isSuccess -> {
                             _uiState.value = currentState.copy(
-                                message = "No printer selected. Please go to Settings to select a printer first."
+                                message = "Receipt printed successfully!"
                             )
-                            return@launch
                         }
-                        
-                        // Try to connect to the printer
-                        _uiState.value = currentState.copy(
-                            message = "Connecting to printer..."
-                        )
-                        
-                        val connectionResult = bluetoothConnectionManager.connect(savedAddress)
-                        when (connectionResult) {
-                            is BluetoothConnectionManager.BluetoothConnectionResult.Connected -> {
-                                // Connection successful, continue with printing
+                        else -> {
+                            val errorMessage = when (result) {
+                                is com.walkyriasys.pyme.facturacion.domain.print.PrintResult.ValidationFailed -> 
+                                    "Document validation failed: ${result.reason}"
+                                is com.walkyriasys.pyme.facturacion.domain.print.PrintResult.ConnectionFailed -> 
+                                    "Connection failed: ${result.reason}"
+                                is com.walkyriasys.pyme.facturacion.domain.print.PrintResult.PrintFailed -> 
+                                    "Print failed: ${result.reason}"
+                                is com.walkyriasys.pyme.facturacion.domain.print.PrintResult.UnexpectedError -> 
+                                    "Unexpected error: ${result.reason}"
+                                else -> "Unknown error occurred"
                             }
-                            is BluetoothConnectionManager.BluetoothConnectionResult.BluetoothDisabled -> {
-                                _uiState.value = currentState.copy(
-                                    message = "Bluetooth is disabled. Please enable Bluetooth and try again."
-                                )
-                                return@launch
-                            }
-                            is BluetoothConnectionManager.BluetoothConnectionResult.InvalidAddress -> {
-                                _uiState.value = currentState.copy(
-                                    message = "Invalid printer address. Please select a different printer."
-                                )
-                                return@launch
-                            }
-                            is BluetoothConnectionManager.BluetoothConnectionResult.Connecting -> {
-                                _uiState.value = currentState.copy(
-                                    message = "Printer is already connecting. Please wait..."
-                                )
-                                return@launch
-                            }
-                            is BluetoothConnectionManager.BluetoothConnectionResult.ErrorConnecting -> {
-                                _uiState.value = currentState.copy(
-                                    message = "Failed to connect to printer: ${connectionResult.exception?.message ?: "Unknown error"}"
-                                )
-                                return@launch
-                            }
+                            _uiState.value = currentState.copy(
+                                message = "Failed to print receipt: $errorMessage"
+                            )
                         }
-                    }
-                    
-                    // Create QR code data in the specified format:
-                    // ORDER_ID|CUSTOMER_NAME|DATE|DELIVERY_DATE|BUSINESS_NAME
-                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    val deliveryDateStr = order.expectedDeliveryDate?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) ?: "N/A"
-                    
-                    val qrData = "${order.id}|${order.customerName}|${order.createdAt.format(dateFormatter)}|$deliveryDateStr|Lavanderia Walki"
-                    
-                    val result = printerService.printQRCode(qrData)
-                    if (result.isSuccess) {
-                        _uiState.value = currentState.copy(
-                            message = "Receipt printed successfully!"
-                        )
-                    } else {
-                        _uiState.value = currentState.copy(
-                            message = "Failed to print receipt: ${result.exceptionOrNull()?.message}"
-                        )
                     }
                 } catch (e: Exception) {
                     _uiState.value = currentState.copy(

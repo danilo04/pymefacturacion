@@ -1,4 +1,4 @@
-package com.walkyriasys.pyme.facturacion.domain.print
+package com.walkyriasys.pyme.facturacion.domain.print.drivers.netum
 
 object Command {
     //打印机初始化
