@@ -1,11 +1,9 @@
 package com.walkyriasys.pyme.facturacion.domain.print
 
-import android.Manifest
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothSocket
 import android.content.Context
-import androidx.annotation.RequiresPermission
 import com.dayoneapp.dayone.di.IOThreadDispatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher

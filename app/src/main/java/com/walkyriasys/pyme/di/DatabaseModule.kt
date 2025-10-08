@@ -1,4 +1,4 @@
-package com.walkyriasys.pyme.facturacion.di
+package com.walkyriasys.pyme.di
 
 import android.content.Context
 import com.walkyriasys.pyme.facturacion.domain.database.PymeFacturacionDatabase

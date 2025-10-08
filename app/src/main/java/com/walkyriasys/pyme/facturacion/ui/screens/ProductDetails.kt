@@ -32,7 +32,8 @@ fun ProductDetailsScreen(onBackClick: () -> Unit = {}) {
         description = "This is a mocked product for demonstration purposes.",
         price = 2500,
         productType = ProductType.Physical,
-        stockQuantity = 15
+        stockQuantity = 15,
+        picturePath = null
     )
 
     Scaffold(

@@ -37,8 +37,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.walkyriasys.pyme.facturacion.domain.database.models.ProductType
 import com.walkyriasys.pyme.facturacion.ui.LocalNavigator
+import com.walkyriasys.pyme.facturacion.ui.components.ImagePicker
 import com.walkyriasys.pyme.facturacion.ui.components.MoneyOutlinedTextField
 import com.walkyriasys.pyme.facturacion.ui.models.productItem
+import android.net.Uri
 import com.walkyriasys.pyme.facturacion.ui.theme.PymefacturacionTheme
 import com.walkyriasys.pyme.facturacion.ui.viewModels.AddEditProductViewModel
 import kotlin.math.exp
@@ -62,6 +64,7 @@ fun AddProductScreen(
     var stockQuantity by remember { mutableStateOf(0) }
     var productType by remember { mutableStateOf(ProductType.Physical) }
     var expanded by remember { mutableStateOf(false) }
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
 
     Scaffold(
         topBar = {
@@ -104,6 +107,13 @@ fun AddProductScreen(
                 value = price,
                 onValueChange = { price = it },
                 label = { Text("Price (in cents)") },
+            )
+            
+            ImagePicker(
+                selectedImageUri = selectedImageUri,
+                onImageSelected = { uri -> selectedImageUri = uri },
+                onImageRemoved = { selectedImageUri = null },
+                label = "Product Image"
             )
             // Product Type Dropdown
             ExposedDropdownMenuBox(
@@ -154,7 +164,8 @@ fun AddProductScreen(
                         price = price,
                         type = productType,
                         stock = stockValue,
-                        uuid = viewModel::genNewUuid
+                        uuid = viewModel::genNewUuid,
+                        picturePath = selectedImageUri
                     )
 
                     viewModel.addProduct(productItem)

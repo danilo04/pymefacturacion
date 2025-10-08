@@ -22,7 +22,9 @@ data class Product(
     @ColumnInfo(name = PRODUCT_TYPE)
     val productType: ProductType,
     @ColumnInfo(name = STOCK_QUANTITY)
-    val stockQuantity: Int?
+    val stockQuantity: Int?,
+    @ColumnInfo(name = PICTURE_PATH)
+    val picturePath: String?
 ) {
     companion object {
         const val TABLE_NAME = "products"
@@ -33,6 +35,7 @@ data class Product(
         const val PRICE = "price"
         const val STOCK_QUANTITY = "stock_quantity"
         const val PRODUCT_TYPE = "product_type"
+        const val PICTURE_PATH = "picture_path"
     }
 }
 

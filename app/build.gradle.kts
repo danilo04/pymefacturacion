@@ -78,6 +78,9 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
 
+    // Image loading
+    implementation(libs.coil.compose)
+
     // External libraries
     implementation(files("${rootProject.projectDir}/libs/btsdk.jar"))
     implementation(files("${rootProject.projectDir}/libs/zixng.jar"))

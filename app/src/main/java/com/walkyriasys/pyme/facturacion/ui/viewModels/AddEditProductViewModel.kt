@@ -6,7 +6,9 @@ import com.walkyriasys.pyme.facturacion.domain.repositories.ProductsRepository
 import com.walkyriasys.pyme.facturacion.navigation.Navigator
 import com.walkyriasys.pyme.facturacion.ui.SnackbarManager
 import com.walkyriasys.pyme.facturacion.ui.models.ProductItem
+import com.walkyriasys.pyme.facturacion.ui.models.productItem
 import com.walkyriasys.pyme.facturacion.ui.models.toProduct
+import com.walkyriasys.pyme.storage.StorageManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -18,6 +20,7 @@ import kotlin.uuid.Uuid
 @HiltViewModel(assistedFactory = AddEditProductViewModel.Factory::class)
 class AddEditProductViewModel @AssistedInject constructor(
     private val productsRepository: ProductsRepository,
+    private val storageManager: StorageManager,
     @Assisted("navigator") private val navigator: Navigator,
 ) : ViewModel() {
     @AssistedFactory
@@ -29,7 +32,11 @@ class AddEditProductViewModel @AssistedInject constructor(
 
     fun addProduct(productItem: ProductItem) {
         viewModelScope.launch {
-            val product = productItem.toProduct()
+            // Store image if it exists.
+            val productPhoto = productItem.picturePath?.let {
+                storageManager.storeProductPhoto(productItem.uuid, productItem.picturePath)
+            }
+            val product = productItem.toProduct(productPhoto)
             val productId = productsRepository.addProduct(product)
             when {
                 (productId > 0) -> {

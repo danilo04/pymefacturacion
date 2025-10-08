@@ -1,5 +1,6 @@
 package com.walkyriasys.pyme.facturacion.ui.models
 
+import android.net.Uri
 import com.walkyriasys.pyme.facturacion.domain.database.models.Product
 import com.walkyriasys.pyme.facturacion.domain.database.models.ProductType
 import java.math.BigDecimal
@@ -11,7 +12,8 @@ sealed class ProductItem(
     val name: String,
     val description: String,
     val price: BigDecimal,
-    val uuid: String
+    val uuid: String,
+    val picturePath: Uri?
 ) {
     data class PhysicalProduct(
         val productId: Int,
@@ -20,7 +22,8 @@ sealed class ProductItem(
         val productPrice: BigDecimal,
         val productStock: Int,
         val productUuid: String,
-    ) : ProductItem(productId, productName, productDescription, productPrice, productUuid)
+        val productPicturePath: Uri? = null,
+    ) : ProductItem(productId, productName, productDescription, productPrice, productUuid, productPicturePath)
 
     data class DigitalProduct(
         val productId: Int,
@@ -28,7 +31,8 @@ sealed class ProductItem(
         val productDescription: String,
         val productPrice: BigDecimal,
         val productUuid: String,
-    ) : ProductItem(productId, productName, productDescription, productPrice, productUuid)
+        val productPicturePath: Uri? = null,
+    ) : ProductItem(productId, productName, productDescription, productPrice, productUuid, productPicturePath)
 
     data class ServiceProduct(
         val productId: Int,
@@ -36,7 +40,8 @@ sealed class ProductItem(
         val productDescription: String,
         val productPrice: BigDecimal,
         val productUuid: String,
-    ) : ProductItem(productId, productName, productDescription, productPrice, productUuid)
+        val productPicturePath: Uri? = null,
+    ) : ProductItem(productId, productName, productDescription, productPrice, productUuid, productPicturePath)
 }
 
 fun productItem(
@@ -46,6 +51,7 @@ fun productItem(
     stock: Int?,
     type: ProductType,
     uuid: () -> String,
+    picturePath: Uri? = null,
 ): ProductItem {
     return when (type) {
         ProductType.Physical -> {
@@ -55,7 +61,8 @@ fun productItem(
                 productDescription = description,
                 productPrice = BigDecimal(price),
                 productUuid = uuid.invoke(),
-                productStock = stock ?: 0
+                productStock = stock ?: 0,
+                productPicturePath = picturePath
             )
         }
 
@@ -66,6 +73,7 @@ fun productItem(
                 productDescription = description,
                 productPrice = BigDecimal(price),
                 productUuid = uuid.invoke(),
+                productPicturePath = picturePath
             )
         }
 
@@ -76,6 +84,7 @@ fun productItem(
                 productDescription = description,
                 productPrice = BigDecimal(price),
                 productUuid = uuid.invoke(),
+                productPicturePath = picturePath
             )
         }
     }
@@ -90,6 +99,7 @@ fun Product.toProductItem(): ProductItem {
             productPrice = price.minorToMajorUnits(),
             productStock = stockQuantity ?: 0,
             productUuid = uuid,
+            productPicturePath = picturePath?.let { Uri.parse("file://$it") },
         )
 
         ProductType.Digital -> ProductItem.DigitalProduct(
@@ -98,6 +108,7 @@ fun Product.toProductItem(): ProductItem {
             productDescription = description ?: "",
             productPrice = price.minorToMajorUnits(),
             productUuid = uuid,
+            productPicturePath = picturePath?.let { Uri.parse("file://$it") },
         )
 
         ProductType.Service -> ProductItem.ServiceProduct(
@@ -106,11 +117,12 @@ fun Product.toProductItem(): ProductItem {
             productDescription = description ?: "",
             productPrice = price.minorToMajorUnits(),
             productUuid = uuid,
+            productPicturePath = picturePath?.let { Uri.parse("file://$it") },
         )
     }
 }
 
-fun ProductItem.toProduct(): Product {
+fun ProductItem.toProduct(productPhoto: String? = null): Product {
     return when (this) {
         is ProductItem.DigitalProduct -> Product(
             id = productId,
@@ -119,7 +131,8 @@ fun ProductItem.toProduct(): Product {
             description = productDescription,
             price = productPrice.majorToMinorUnits(),
             productType = ProductType.Digital,
-            stockQuantity = null // Digital products typically do not have stock
+            stockQuantity = null, // Digital products typically do not have stock
+            picturePath = productPhoto
         )
 
         is ProductItem.PhysicalProduct -> Product(
@@ -129,7 +142,8 @@ fun ProductItem.toProduct(): Product {
             description = productDescription,
             price = productPrice.majorToMinorUnits(),
             productType = ProductType.Physical,
-            stockQuantity = productStock
+            stockQuantity = productStock,
+            picturePath = productPhoto
         )
 
         is ProductItem.ServiceProduct -> Product(
@@ -139,7 +153,8 @@ fun ProductItem.toProduct(): Product {
             description = productDescription,
             price = productPrice.majorToMinorUnits(),
             productType = ProductType.Service,
-            stockQuantity = null // Services typically do not have stock
+            stockQuantity = null, // Services typically do not have stock
+            picturePath = productPhoto
         )
     }
 }
