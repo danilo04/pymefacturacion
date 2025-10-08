@@ -1,6 +1,5 @@
 package com.walkyriasys.pyme.facturacion.ui.screens
 
-import Screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,9 +21,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,10 +36,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.walkyriasys.pyme.facturacion.R
+import com.walkyriasys.pyme.facturacion.ui.Screens
 import com.walkyriasys.pyme.facturacion.ui.components.OnBottomReached
+import com.walkyriasys.pyme.facturacion.ui.components.PymeScaffold
 import com.walkyriasys.pyme.facturacion.ui.models.ProductItem
 import com.walkyriasys.pyme.facturacion.ui.theme.PymefacturacionTheme
 import com.walkyriasys.pyme.facturacion.ui.viewModels.ProductsViewModel
@@ -54,6 +54,7 @@ fun ProductsScreen(navController: NavController) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle(ProductsViewModel.UiState.Loading)
 
     ProductList(
+        navController = navController,
         state = uiState.value,
         onAddProduct = { navController.navigate(Screens.AddProduct.route) },
         onBackPressed = { navController.popBackStack() }
@@ -63,23 +64,21 @@ fun ProductsScreen(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProductList(
+    navController: NavController,
     state: ProductsViewModel.UiState,
     onAddProduct: () -> Unit,
     onBackPressed: () -> Unit,
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.products_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onBackPressed) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                }
-            )
+    PymeScaffold(
+        title = stringResource(R.string.products_title),
+        navController = navController,
+        navigationIcon = {
+            IconButton(onClick = onBackPressed) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -117,7 +116,9 @@ private fun ProductList(
 
             ProductsViewModel.UiState.Empty -> {
                 Box(
-                    modifier = Modifier.fillMaxSize().padding(paddingValues),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -226,6 +227,7 @@ fun ProductsScreenPreview() {
         )
 
         ProductList(
+            navController = rememberNavController(),
             state = ProductsViewModel.UiState.Loaded(products = mockProducts) {},
             onBackPressed = {},
             onAddProduct = {}

@@ -1,3 +1,5 @@
+package com.walkyriasys.pyme.facturacion.ui
+
 enum class Screens(
     val route: String,
 ) {
@@ -12,6 +14,7 @@ enum class Screens(
     Cart("cart"),
     Checkout("checkout"),
     OrderConfirmation("order_confirmation"),
+    Reports("reports"),
     Settings("settings"),
     PrinterSelection("printer_selection"),
     PrintTest("print_test"),

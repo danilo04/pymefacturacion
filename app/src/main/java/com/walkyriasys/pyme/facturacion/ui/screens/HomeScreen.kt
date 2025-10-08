@@ -1,6 +1,5 @@
 package com.walkyriasys.pyme.facturacion.ui.screens
 
-import Screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.walkyriasys.pyme.facturacion.R
+import com.walkyriasys.pyme.facturacion.ui.Screens
 import com.walkyriasys.pyme.facturacion.ui.icons.Icons
 import com.walkyriasys.pyme.facturacion.ui.icons.dashboard.IcOrders
 import com.walkyriasys.pyme.facturacion.ui.icons.dashboard.IcProducts
