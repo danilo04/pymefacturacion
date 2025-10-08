@@ -75,9 +75,9 @@ private fun ProductList(
         navigationIcon = {
             IconButton(onClick = onBackPressed) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back"
-                )
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.back)
+                            )
             }
         },
         floatingActionButton = {
@@ -122,7 +122,7 @@ private fun ProductList(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "There are no products yet.",
+                        text = stringResource(R.string.no_products_yet),
                         fontWeight = FontWeight.Bold,
                         color = androidx.compose.ui.graphics.Color.Gray
                     )
@@ -157,7 +157,7 @@ private fun ProductItem(product: ProductItem) {
                             .data(product.picturePath)
                             .crossfade(true)
                             .build(),
-                        contentDescription = "Product image for ${product.name}",
+                        contentDescription = stringResource(R.string.product_image_description, product.name),
                         contentScale = ContentScale.Crop,
                         placeholder = painterResource(R.drawable.ic_product_placeholder),
                         error = painterResource(R.drawable.ic_product_placeholder),
@@ -184,7 +184,7 @@ private fun ProductItem(product: ProductItem) {
                     )
                 }
                 Text(
-                    text = "Price: ${product.price} USD",
+                    text = stringResource(R.string.price_format, product.price),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold
                 )

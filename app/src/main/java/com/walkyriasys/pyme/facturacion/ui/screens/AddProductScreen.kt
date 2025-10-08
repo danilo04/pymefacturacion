@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.walkyriasys.pyme.facturacion.R
 import com.walkyriasys.pyme.facturacion.domain.database.models.ProductType
 import com.walkyriasys.pyme.facturacion.ui.LocalNavigator
 import com.walkyriasys.pyme.facturacion.ui.components.ImagePicker
@@ -69,12 +70,12 @@ fun AddProductScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add Product") },
+                title = { Text(stringResource(R.string.add_product_title)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
                 }
@@ -91,13 +92,13 @@ fun AddProductScreen(
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Product Name") },
+                label = { Text(stringResource(R.string.product_name)) },
                 modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("Description") },
+                label = { Text(stringResource(R.string.description)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp), // Adjust height for at least two lines
@@ -106,14 +107,14 @@ fun AddProductScreen(
             MoneyOutlinedTextField(
                 value = price,
                 onValueChange = { price = it },
-                label = { Text("Price (in cents)") },
+                label = { Text(stringResource(R.string.price_cents)) },
             )
             
             ImagePicker(
                 selectedImageUri = selectedImageUri,
                 onImageSelected = { uri -> selectedImageUri = uri },
                 onImageRemoved = { selectedImageUri = null },
-                label = "Product Image"
+                label = stringResource(R.string.product_image)
             )
             // Product Type Dropdown
             ExposedDropdownMenuBox(
@@ -125,7 +126,7 @@ fun AddProductScreen(
                     onValueChange = {},
                     modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
                     readOnly = true,
-                    label = { Text("Product Type") },
+                    label = { Text(stringResource(R.string.product_type)) },
                     trailingIcon = { TrailingIcon(expanded = expanded) }
                 )
                 ExposedDropdownMenu(
@@ -146,7 +147,7 @@ fun AddProductScreen(
             // Conditionally show stock quantity field
             if (productType == ProductType.Physical) {
                 QuantitySelector(
-                    label = "In Stock",
+                    label = stringResource(R.string.in_stock),
                     value = stockQuantity,
                     onValueChange = { newValue ->
                         stockQuantity = newValue
@@ -172,7 +173,7 @@ fun AddProductScreen(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Add Product")
+                Text(stringResource(R.string.add_product))
             }
         }
     }

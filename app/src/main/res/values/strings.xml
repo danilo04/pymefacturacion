@@ -1,10 +1,113 @@
 <resources>
     <string name="app_name">Walkiria Invoices</string>
+
+    <!-- Dashboard -->
+    <string name="products">Products</string>
+    <string name="orders">Orders</string>
+    <string name="reports">Reports</string>
+    <string name="settings">Settings</string>
+
+    <!-- Products Screen -->
     <string name="products_title">Products</string>
     <string name="add_product">Add Product</string>
+    <string name="no_products_yet">There are no products yet.</string>
+    <string name="product_image_description">Product image for %1$s</string>
+    <string name="price_format">Price: %1$s USD</string>
 
-    <!-- Types of products -->
+    <!-- Add Product Screen -->
+    <string name="add_product_title">Add Product</string>
+    <string name="product_name">Product Name</string>
+    <string name="description">Description</string>
+    <string name="price_cents">Price (in cents)</string>
+    <string name="product_image">Product Image</string>
+    <string name="product_type">Product Type</string>
+    <string name="in_stock">In Stock</string>
+
+    <!-- Product Types -->
     <string name="physical">Physical</string>
     <string name="service">Service</string>
     <string name="digital">Digital</string>
+
+    <!-- Orders Screen -->
+    <string name="orders_title">Orders</string>
+    <string name="add_order">Add Order</string>
+    <string name="read_qr_code">Read QR Code</string>
+    <string name="filter_orders">Filter Orders</string>
+    <string name="all_orders">All Orders</string>
+    <string name="pending">Pending</string>
+    <string name="completed">Completed</string>
+    <string name="delivered">Delivered</string>
+    <string name="filtered_by">Filtered by: %1$s</string>
+    <string name="clear_filter">Clear Filter</string>
+    <string name="no_orders_found_status">No orders found with status: %1$s</string>
+    <string name="no_orders">There are no orders.</string>
+    <string name="show_all_orders">Show All Orders</string>
+    <string name="order_number">Order #%1$d</string>
+    <string name="customer_format">Customer: %1$s</string>
+    <string name="created_format">Created: %1$s</string>
+
+    <!-- Add Order Screen -->
+    <string name="add_new_order">Add New Order</string>
+    <string name="customer_name">Customer Name</string>
+    <string name="order_date">Order Date</string>
+    <string name="delivery_date_time">Delivery Date and Time</string>
+    <string name="order_items">Order Items</string>
+    <string name="add_products_to_order">Add Products to Order</string>
+    <string name="total_amount">Total Amount:</string>
+    <string name="create_order">Create Order</string>
+    <string name="loading_products">Loading products...</string>
+    <string name="no_products_available">No products available. Please add products first.</string>
+    <string name="remove_item">Remove item</string>
+    <string name="add_to_order">Add to order</string>
+    <string name="select_order_date">Select order date</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="connect_printer">Connect Printer</string>
+    <string name="selected_printer">Selected: %1$s</string>
+    <string name="no_printer_selected">No printer selected</string>
+    <string name="enable_barcode_generation">Enable Barcode Generation</string>
+    <string name="navigate_forward">Navigate forward</string>
+
+    <!-- Bluetooth Device Selection Screen -->
+    <string name="select_bluetooth_printer">Select Bluetooth Printer</string>
+    <string name="refresh">Refresh</string>
+    <string name="bluetooth_not_supported">Bluetooth is not supported on this device</string>
+    <string name="bluetooth_disabled">Bluetooth is disabled</string>
+    <string name="enable_bluetooth_message">Please enable Bluetooth to scan for printers</string>
+    <string name="no_paired_devices">No paired Bluetooth devices</string>
+    <string name="pair_bluetooth_message">Please pair your Bluetooth printer in device settings first</string>
+    <string name="current_selection">Current Selection</string>
+    <string name="clear_selection">Clear Selection</string>
+    <string name="available_paired_devices">Available Paired Devices</string>
+    <string name="bluetooth_device">Bluetooth Device</string>
+    <string name="error_loading_devices">Error loading devices</string>
+    <string name="retry">Retry</string>
+
+    <!-- Components -->
+    <string name="back">Back</string>
+    <string name="decrease_quantity">Decrease quantity</string>
+    <string name="increase_quantity">Increase quantity</string>
+    <string name="date_and_time">Date and Time</string>
+    <string name="select_date_time">Select Date and Time</string>
+    <string name="next">Next</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="select_time">Select Time</string>
+    <string name="selected_product_image">Selected product image</string>
+    <string name="remove_image">Remove image</string>
+    <string name="tap_to_add_image">Tap to add product image</string>
+    <string name="camera_or_gallery">Camera or Gallery</string>
+    <string name="select_image">Select Image</string>
+    <string name="choose_option_image">Choose an option to add a product image</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
+    <string name="selected">Selected</string>
+
+    <!-- Reports -->
+    <string name="period">Período:</string>
+
+    <!-- Print related -->
+    <string name="printer">Printer</string>
+    <string name="barcode">Barcode</string>
 </resources>

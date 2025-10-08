@@ -19,12 +19,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.walkyriasys.pyme.facturacion.R
 
 @Composable
 fun QuantitySelector(
@@ -55,7 +57,7 @@ fun QuantitySelector(
             ) {
                 Icon(
                     imageVector = Icons.Default.Remove,
-                    contentDescription = "Decrease quantity"
+                    contentDescription = stringResource(R.string.decrease_quantity)
                 )
             }
 
@@ -100,7 +102,7 @@ fun QuantitySelector(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Increase quantity"
+                    contentDescription = stringResource(R.string.increase_quantity)
                 )
             }
         }

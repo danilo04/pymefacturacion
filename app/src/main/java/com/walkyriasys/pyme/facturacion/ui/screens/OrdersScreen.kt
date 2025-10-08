@@ -36,12 +36,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.walkyriasys.pyme.facturacion.R
 import com.walkyriasys.pyme.facturacion.domain.database.models.Order
 import com.walkyriasys.pyme.facturacion.domain.database.models.Order.OrderStatus
 import com.walkyriasys.pyme.facturacion.ui.Screens
@@ -61,13 +63,13 @@ fun OrdersScreen(navController: NavController) {
     var showFilterMenu by remember { mutableStateOf(false) }
 
     PymeScaffold(
-        title = "Orders",
+        title = stringResource(R.string.orders_title),
         navController = navController,
         navigationIcon = {
             IconButton(onClick = { navController.popBackStack() }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back"
+                    contentDescription = stringResource(R.string.back)
                 )
             }
         },
@@ -77,13 +79,13 @@ fun OrdersScreen(navController: NavController) {
             }) {
                 Icon(
                     imageVector = Icons.Default.QrCode,
-                    contentDescription = "Read QR Code"
+                    contentDescription = stringResource(R.string.read_qr_code)
                 )
             }
             IconButton(onClick = { showFilterMenu = true }) {
                 Icon(
                     imageVector = Icons.Default.FilterList,
-                    contentDescription = "Filter Orders"
+                    contentDescription = stringResource(R.string.filter_orders)
                 )
             }
             DropdownMenu(
@@ -91,7 +93,7 @@ fun OrdersScreen(navController: NavController) {
                 onDismissRequest = { showFilterMenu = false }
             ) {
                 DropdownMenuItem(
-                    text = { Text("All Orders") },
+                    text = { Text(stringResource(R.string.all_orders)) },
                     onClick = {
                         viewModel.setFilter(null)
                         showFilterMenu = false
@@ -101,7 +103,7 @@ fun OrdersScreen(navController: NavController) {
                     } else null
                 )
                 DropdownMenuItem(
-                    text = { Text("Pending") },
+                    text = { Text(stringResource(R.string.pending)) },
                     onClick = {
                         viewModel.setFilter(OrderStatus.PENDING)
                         showFilterMenu = false
@@ -111,7 +113,7 @@ fun OrdersScreen(navController: NavController) {
                     } else null
                 )
                 DropdownMenuItem(
-                    text = { Text("Completed") },
+                    text = { Text(stringResource(R.string.completed)) },
                     onClick = {
                         viewModel.setFilter(OrderStatus.COMPLETED)
                         showFilterMenu = false
@@ -121,7 +123,7 @@ fun OrdersScreen(navController: NavController) {
                     } else null
                 )
                 DropdownMenuItem(
-                    text = { Text("Delivered") },
+                    text = { Text(stringResource(R.string.delivered)) },
                     onClick = {
                         viewModel.setFilter(OrderStatus.DELIVERED)
                         showFilterMenu = false
@@ -138,7 +140,7 @@ fun OrdersScreen(navController: NavController) {
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Add Order"
+                    contentDescription = stringResource(R.string.add_order)
                 )
             }
         }
@@ -164,13 +166,13 @@ fun OrdersScreen(navController: NavController) {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Filtered by: ${filter.name}",
+                            text = stringResource(R.string.filtered_by, filter.name),
                             style = MaterialTheme.typography.bodyMedium
                         )
                         TextButton(
                             onClick = { viewModel.setFilter(null) }
                         ) {
-                            Text("Clear Filter")
+                            Text(stringResource(R.string.clear_filter))
                         }
                     }
                 }
@@ -188,9 +190,9 @@ fun OrdersScreen(navController: NavController) {
                             val filterName = selectedFilter?.name
                             Text(
                                 text = if (filterName != null) {
-                                    "No orders found with status: $filterName"
+                                    stringResource(R.string.no_orders_found_status, filterName)
                                 } else {
-                                    "There are no orders."
+                                    stringResource(R.string.no_orders)
                                 },
                                 fontWeight = FontWeight.Bold,
                                 color = androidx.compose.ui.graphics.Color.Gray
@@ -199,7 +201,7 @@ fun OrdersScreen(navController: NavController) {
                                 TextButton(
                                     onClick = { viewModel.setFilter(null) }
                                 ) {
-                                    Text("Show All Orders")
+                                    Text(stringResource(R.string.show_all_orders))
                                 }
                             }
                         }
@@ -277,7 +279,7 @@ private fun OrderRow(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Order #${order.id}",
+                    text = stringResource(R.string.order_number, order.id),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -290,11 +292,11 @@ private fun OrderRow(
             ) {
                 Column {
                     Text(
-                        text = "Customer: ${order.customerName}",
+                        text = stringResource(R.string.customer_format, order.customerName),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Text(
-                        text = "Created: ${order.createdAt}",
+                        text = stringResource(R.string.created_format, order.createdAt),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

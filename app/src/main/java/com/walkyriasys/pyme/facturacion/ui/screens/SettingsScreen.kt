@@ -30,11 +30,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.walkyriasys.pyme.facturacion.R
 import com.walkyriasys.pyme.facturacion.ui.Screens
 import com.walkyriasys.pyme.facturacion.ui.viewModels.SettingsViewModel
 
@@ -57,10 +59,10 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Settings") },
+                title = { Text(stringResource(R.string.settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -92,21 +94,21 @@ fun SettingsScreen(
                     ) {
                         Icon(
                             Icons.Default.Print,
-                            contentDescription = "Printer",
+                            contentDescription = stringResource(R.string.printer),
                             modifier = Modifier.size(24.dp)
                         )
                         Column(
                             modifier = Modifier.padding(start = 16.dp)
                         ) {
-                            Text("Connect Printer")
+                            Text(stringResource(R.string.connect_printer))
                             selectedPrinterName?.let { printerName ->
                                 Text(
-                                    text = "Selected: $printerName",
+                                    text = stringResource(R.string.selected_printer, printerName),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.primary
                                 )
                             } ?: Text(
-                                text = "No printer selected",
+                                text = stringResource(R.string.no_printer_selected),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -114,7 +116,7 @@ fun SettingsScreen(
                     }
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = "Navigate forward",
+                        contentDescription = stringResource(R.string.navigate_forward),
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -136,11 +138,11 @@ fun SettingsScreen(
                     ) {
                         Icon(
                             Icons.Default.QrCode,
-                            contentDescription = "Barcode",
+                            contentDescription = stringResource(R.string.barcode),
                             modifier = Modifier.size(24.dp)
                         )
                         Text(
-                            "Enable Barcode Generation",
+                            stringResource(R.string.enable_barcode_generation),
                             modifier = Modifier.padding(start = 16.dp)
                         )
                     }

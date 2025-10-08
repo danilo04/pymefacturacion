@@ -40,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,6 +49,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.walkyriasys.pyme.facturacion.R
 import com.walkyriasys.pyme.facturacion.domain.models.BluetoothDevice
 import com.walkyriasys.pyme.facturacion.ui.LocalNavigator
 import com.walkyriasys.pyme.facturacion.ui.theme.PymefacturacionTheme
@@ -91,16 +93,16 @@ fun BluetoothDeviceSelectionScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Select Bluetooth Printer") },
+                title = { Text(stringResource(R.string.select_bluetooth_printer)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
                 actions = {
                     if (uiState is BluetoothDeviceSelectionViewModel.UiState.DevicesLoaded) {
                         IconButton(onClick = { viewModel.refreshDevices() }) {
-                            Icon(Icons.Default.Refresh, contentDescription = "Refresh")
+                            Icon(Icons.Default.Refresh, contentDescription = stringResource(R.string.refresh))
                         }
                     }
                 }
@@ -171,7 +173,7 @@ private fun BluetoothNotSupportedContent() {
             tint = MaterialTheme.colorScheme.error
         )
         Text(
-            text = "Bluetooth is not supported on this device",
+            text = stringResource(R.string.bluetooth_not_supported),
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 16.dp)
@@ -193,13 +195,13 @@ private fun BluetoothDisabledContent() {
             tint = MaterialTheme.colorScheme.error
         )
         Text(
-            text = "Bluetooth is disabled",
+            text = stringResource(R.string.bluetooth_disabled),
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 16.dp)
         )
         Text(
-            text = "Please enable Bluetooth to scan for printers",
+            text = stringResource(R.string.enable_bluetooth_message),
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 8.dp)
@@ -221,13 +223,13 @@ private fun NoPairedDevicesContent() {
             tint = MaterialTheme.colorScheme.primary
         )
         Text(
-            text = "No paired Bluetooth devices",
+            text = stringResource(R.string.no_paired_devices),
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 16.dp)
         )
         Text(
-            text = "Please pair your Bluetooth printer in device settings first",
+            text = stringResource(R.string.pair_bluetooth_message),
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 8.dp)
@@ -261,7 +263,7 @@ private fun DeviceListContent(
                         ) {
                             Column {
                                 Text(
-                                    text = "Current Selection",
+                                    text = stringResource(R.string.current_selection),
                                     style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.primary
                                 )
@@ -278,7 +280,7 @@ private fun DeviceListContent(
                             }
                             Icon(
                                 Icons.Default.CheckCircle,
-                                contentDescription = "Selected",
+                                contentDescription = stringResource(R.string.selected),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -288,7 +290,7 @@ private fun DeviceListContent(
                                 onClick = clearAction,
                                 modifier = Modifier.padding(top = 8.dp)
                             ) {
-                                Text("Clear Selection")
+                                Text(stringResource(R.string.clear_selection))
                             }
                         }
                     }
@@ -298,7 +300,7 @@ private fun DeviceListContent(
 
         item {
             Text(
-                text = "Available Paired Devices",
+                text = stringResource(R.string.available_paired_devices),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
@@ -337,7 +339,7 @@ private fun BluetoothDeviceItem(
             ) {
                 Icon(
                     Icons.Default.Bluetooth,
-                    contentDescription = "Bluetooth Device",
+                    contentDescription = stringResource(R.string.bluetooth_device),
                     modifier = Modifier.size(24.dp),
                     tint = MaterialTheme.colorScheme.primary
                 )
@@ -375,7 +377,7 @@ private fun ErrorContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Error loading devices",
+            text = stringResource(R.string.error_loading_devices),
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center
         )
@@ -389,7 +391,7 @@ private fun ErrorContent(
             onClick = onRetry,
             modifier = Modifier.padding(top = 16.dp)
         ) {
-            Text("Retry")
+            Text(stringResource(R.string.retry))
         }
     }
 }

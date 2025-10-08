@@ -20,6 +20,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.walkyriasys.pyme.facturacion.R
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -55,14 +57,14 @@ fun DatetimePicker(
         OutlinedTextField(
             value = formattedDateTime,
             onValueChange = {},
-            label = { label?.let { Text(it) } ?: Text("Date and Time") },
+            label = { label?.let { Text(it) } ?: Text(stringResource(R.string.date_and_time)) },
             readOnly = true,
             modifier = modifier,
             trailingIcon = {
                 IconButton(onClick = onClick) {
                     Icon(
                         imageVector = Icons.Default.CalendarToday,
-                        contentDescription = "Select Date and Time"
+                        contentDescription = stringResource(R.string.select_date_time)
                     )
                 }
             }
@@ -93,12 +95,12 @@ fun DatetimePicker(
                         showTimePicker = true
                     }
                 ) {
-                    Text("Next")
+                    Text(stringResource(R.string.next))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         ) {
@@ -133,15 +135,15 @@ fun DatetimePicker(
                         showTimePicker = false
                     }
                 ) {
-                    Text("OK")
+                    Text(stringResource(R.string.ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showTimePicker = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             },
-            title = { Text("Select Time") },
+            title = { Text(stringResource(R.string.select_time)) },
             text = {
                 TimePicker(state = timePickerState)
             }

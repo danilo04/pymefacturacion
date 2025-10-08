@@ -42,12 +42,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.walkyriasys.pyme.facturacion.R
 import com.walkyriasys.pyme.facturacion.domain.database.models.Order
 import com.walkyriasys.pyme.facturacion.domain.database.models.OrderItem
 import com.walkyriasys.pyme.facturacion.ui.LocalNavigator
@@ -126,12 +128,12 @@ fun AddOrderScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add New Order") },
+                title = { Text(stringResource(R.string.add_new_order)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.back)
                         )
                     }
                 }
@@ -153,7 +155,7 @@ fun AddOrderScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Total Amount:",
+                            text = stringResource(R.string.total_amount),
                             style = MaterialTheme.typography.titleMedium
                         )
                         Text(
@@ -196,7 +198,7 @@ fun AddOrderScreen(
                                 && customerName.isNotEmpty() && selectedDateTime != null,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Create Order")
+                        Text(stringResource(R.string.create_order))
                     }
                 }
             }
@@ -214,7 +216,7 @@ fun AddOrderScreen(
                 OutlinedTextField(
                     value = customerName,
                     onValueChange = { customerName = it },
-                    label = { Text("Customer Name") },
+                    label = { Text(stringResource(R.string.customer_name)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
@@ -225,14 +227,14 @@ fun AddOrderScreen(
                 OutlinedTextField(
                     value = selectedOrderDate,
                     onValueChange = {},
-                    label = { Text("Order Date") },
+                    label = { Text(stringResource(R.string.order_date)) },
                     modifier = Modifier.fillMaxWidth(),
                     readOnly = true,
                     trailingIcon = {
                         IconButton(onClick = { showOrderDatePicker = true }) {
                             Icon(
                                 imageVector = Icons.Default.CalendarMonth,
-                                contentDescription = "Select order date"
+                                contentDescription = stringResource(R.string.select_order_date)
                             )
                         }
                     }
@@ -243,12 +245,12 @@ fun AddOrderScreen(
                         onDismissRequest = { showOrderDatePicker = false },
                         confirmButton = {
                             TextButton(onClick = { showOrderDatePicker = false }) {
-                                Text("OK")
+                                Text(stringResource(R.string.ok))
                             }
                         },
                         dismissButton = {
                             TextButton(onClick = { showOrderDatePicker = false }) {
-                                Text("Cancel")
+                                Text(stringResource(R.string.cancel))
                             }
                         }
                     ) {
@@ -263,14 +265,14 @@ fun AddOrderScreen(
                     initialDateTime = LocalDateTime.now(),
                     formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm a"),
                     onDateTimeSelected = { selectedDateTime = it },
-                    label = "Delivery Date and Time"
+                    label = stringResource(R.string.delivery_date_time)
                 )
             }
 
             // Products selection header
             item {
                 Text(
-                    text = "Order Items",
+                    text = stringResource(R.string.order_items),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
@@ -305,7 +307,7 @@ fun AddOrderScreen(
                                     .padding(16.dp)
                             ) {
                                 Text(
-                                    text = "Add Products to Order",
+                                    text = stringResource(R.string.add_products_to_order),
                                     style = MaterialTheme.typography.titleSmall
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
@@ -353,7 +355,7 @@ fun AddOrderScreen(
                                 .height(100.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("Loading products...")
+                            Text(stringResource(R.string.loading_products))
                         }
                     }
 
@@ -364,7 +366,7 @@ fun AddOrderScreen(
                                 .height(100.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("No products available. Please add products first.")
+                            Text(stringResource(R.string.no_products_available))
                         }
                     }
                 }
@@ -411,7 +413,7 @@ fun OrderItemCard(
             IconButton(onClick = onDelete) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Remove item"
+                    contentDescription = stringResource(R.string.remove_item)
                 )
             }
         }
@@ -446,7 +448,7 @@ fun ProductSelectionRow(
         IconButton(onClick = onAddClick) {
             Icon(
                 imageVector = Icons.Default.Add,
-                contentDescription = "Add to order"
+                contentDescription = stringResource(R.string.add_to_order)
             )
         }
     }

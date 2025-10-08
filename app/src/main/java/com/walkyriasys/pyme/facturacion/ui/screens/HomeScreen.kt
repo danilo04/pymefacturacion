@@ -49,22 +49,22 @@ fun HomeScreen(navController: NavController) {
     val dashboardItems = listOf(
         DashboardItem(
             icon = Icons.IcProducts,
-            title = "Products",
+            title = stringResource(R.string.products),
             route = Screens.Products.route
         ),
         DashboardItem(
             icon = Icons.IcOrders,
-            title = "Orders",
+            title = stringResource(R.string.orders),
             route = Screens.Orders.route
         ),
         DashboardItem(
             icon = Icons.IcReports,
-            title = "Reports",
+            title = stringResource(R.string.reports),
             route = Screens.PrintTest.route
         ),
         DashboardItem(
             icon = Icons.IcSettings,
-            title = "Settings",
+            title = stringResource(R.string.settings),
             route = Screens.Settings.route
         )
     )

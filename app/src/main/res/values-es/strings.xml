@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Walkiria Facturas</string>
+
+    <!-- Dashboard -->
+    <string name="products">Productos</string>
+    <string name="orders">Pedidos</string>
+    <string name="reports">Reportes</string>
+    <string name="settings">Configuración</string>
+
+    <!-- Products Screen -->
+    <string name="products_title">Productos</string>
+    <string name="add_product">Agregar Producto</string>
+    <string name="no_products_yet">Aún no hay productos.</string>
+    <string name="product_image_description">Imagen del producto para %1$s</string>
+    <string name="price_format">Precio: %1$s USD</string>
+
+    <!-- Add Product Screen -->
+    <string name="add_product_title">Agregar Producto</string>
+    <string name="product_name">Nombre del Producto</string>
+    <string name="description">Descripción</string>
+    <string name="price_cents">Precio (en centavos)</string>
+    <string name="product_image">Imagen del Producto</string>
+    <string name="product_type">Tipo de Producto</string>
+    <string name="in_stock">En Stock</string>
+
+    <!-- Product Types -->
+    <string name="physical">Físico</string>
+    <string name="service">Servicio</string>
+    <string name="digital">Digital</string>
+
+    <!-- Orders Screen -->
+    <string name="orders_title">Pedidos</string>
+    <string name="add_order">Agregar Pedido</string>
+    <string name="read_qr_code">Leer Código QR</string>
+    <string name="filter_orders">Filtrar Pedidos</string>
+    <string name="all_orders">Todos los Pedidos</string>
+    <string name="pending">Pendiente</string>
+    <string name="completed">Completado</string>
+    <string name="delivered">Entregado</string>
+    <string name="filtered_by">Filtrado por: %1$s</string>
+    <string name="clear_filter">Limpiar Filtro</string>
+    <string name="no_orders_found_status">No se encontraron pedidos con estado: %1$s</string>
+    <string name="no_orders">No hay pedidos.</string>
+    <string name="show_all_orders">Mostrar Todos los Pedidos</string>
+    <string name="order_number">Pedido #%1$d</string>
+    <string name="customer_format">Cliente: %1$s</string>
+    <string name="created_format">Creado: %1$s</string>
+
+    <!-- Add Order Screen -->
+    <string name="add_new_order">Agregar Nuevo Pedido</string>
+    <string name="customer_name">Nombre del Cliente</string>
+    <string name="order_date">Fecha del Pedido</string>
+    <string name="delivery_date_time">Fecha y Hora de Entrega</string>
+    <string name="order_items">Artículos del Pedido</string>
+    <string name="add_products_to_order">Agregar Productos al Pedido</string>
+    <string name="total_amount">Monto Total:</string>
+    <string name="create_order">Crear Pedido</string>
+    <string name="loading_products">Cargando productos...</string>
+    <string name="no_products_available">No hay productos disponibles. Por favor, agregue productos primero.</string>
+    <string name="remove_item">Quitar artículo</string>
+    <string name="add_to_order">Agregar al pedido</string>
+    <string name="select_order_date">Seleccionar fecha del pedido</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Configuración</string>
+    <string name="connect_printer">Conectar Impresora</string>
+    <string name="selected_printer">Seleccionada: %1$s</string>
+    <string name="no_printer_selected">No se ha seleccionado impresora</string>
+    <string name="enable_barcode_generation">Habilitar Generación de Códigos de Barras</string>
+    <string name="navigate_forward">Navegar hacia adelante</string>
+
+    <!-- Bluetooth Device Selection Screen -->
+    <string name="select_bluetooth_printer">Seleccionar Impresora Bluetooth</string>
+    <string name="refresh">Actualizar</string>
+    <string name="bluetooth_not_supported">Bluetooth no es compatible con este dispositivo</string>
+    <string name="bluetooth_disabled">Bluetooth está deshabilitado</string>
+    <string name="enable_bluetooth_message">Por favor, habilite Bluetooth para buscar impresoras</string>
+    <string name="no_paired_devices">No hay dispositivos Bluetooth emparejados</string>
+    <string name="pair_bluetooth_message">Por favor, empareje su impresora Bluetooth en la configuración del dispositivo primero</string>
+    <string name="current_selection">Selección Actual</string>
+    <string name="clear_selection">Limpiar Selección</string>
+    <string name="available_paired_devices">Dispositivos Emparejados Disponibles</string>
+    <string name="bluetooth_device">Dispositivo Bluetooth</string>
+    <string name="error_loading_devices">Error al cargar dispositivos</string>
+    <string name="retry">Reintentar</string>
+
+    <!-- Components -->
+    <string name="back">Atrás</string>
+    <string name="decrease_quantity">Disminuir cantidad</string>
+    <string name="increase_quantity">Aumentar cantidad</string>
+    <string name="date_and_time">Fecha y Hora</string>
+    <string name="select_date_time">Seleccionar Fecha y Hora</string>
+    <string name="next">Siguiente</string>
+    <string name="cancel">Cancelar</string>
+    <string name="ok">Aceptar</string>
+    <string name="select_time">Seleccionar Hora</string>
+    <string name="selected_product_image">Imagen del producto seleccionada</string>
+    <string name="remove_image">Quitar imagen</string>
+    <string name="tap_to_add_image">Toque para agregar imagen del producto</string>
+    <string name="camera_or_gallery">Cámara o Galería</string>
+    <string name="select_image">Seleccionar Imagen</string>
+    <string name="choose_option_image">Elija una opción para agregar una imagen del producto</string>
+    <string name="camera">Cámara</string>
+    <string name="gallery">Galería</string>
+    <string name="selected">Seleccionado</string>
+
+    <!-- Reports -->
+    <string name="period">Período:</string>
+
+    <!-- Print related -->
+    <string name="printer">Impresora</string>
+    <string name="barcode">Código de Barras</string>
+</resources>
