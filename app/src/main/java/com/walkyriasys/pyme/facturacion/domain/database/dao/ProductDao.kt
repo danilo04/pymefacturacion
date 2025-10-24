@@ -30,4 +30,13 @@ interface ProductDao {
                 "LIMIT :limit OFFSET :offset"
     )
     fun getProducts(limit: Int, offset: Int): Flow<List<Product>>
+
+    @Query(
+        "SELECT * FROM ${Product.TABLE_NAME} " +
+                "WHERE ${Product.NAME} LIKE '%' || :searchQuery || '%' " +
+                "OR ${Product.DESCRIPTION} LIKE '%' || :searchQuery || '%' " +
+                "ORDER BY ${Product.NAME} ASC " +
+                "LIMIT :limit OFFSET :offset"
+    )
+    fun searchProducts(searchQuery: String, limit: Int, offset: Int): Flow<List<Product>>
 }

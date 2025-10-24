@@ -13,17 +13,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-/**
- * A data source that can be used to load data in pages. It should be used when you want to load
- * live data from the database in pages. It's useful for heavier screens like the timeline where
- * you need to combine multiple data sources and it could be difficult when you have a lot of items
- * to show.
- * Bear in mind that the builder is called every time for the entire domain model. This means that
- * it has to be efficient (preferably cache the results). This is necessary for timeline where
- * the UI model for a page can change based on other pages.
- * @param loadPage function to load the given page from the database with the given parameters
- * @param builder function that takes the data from the database and builds the UI state
- */
 class PagingDataSource<PARAMS : Any, DOMAIN_MODEL, UI_MODEL>(
     val viewModelScope: CoroutineScope,
     val backgroundDispatcher: CoroutineDispatcher,

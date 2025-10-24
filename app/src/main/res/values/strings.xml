@@ -13,6 +13,11 @@
     <string name="no_products_yet">There are no products yet.</string>
     <string name="product_image_description">Product image for %1$s</string>
     <string name="price_format">Price: %1$s USD</string>
+    <string name="search_products_placeholder">Search products…</string>
+    <string name="search_icon">Search</string>
+    <string name="clear_search">Clear search</string>
+    <string name="clear_icon">Clear</string>
+    <string name="no_products_found">No products found for "%1$s"</string>
 
     <!-- Add Product Screen -->
     <string name="add_product_title">Add Product</string>

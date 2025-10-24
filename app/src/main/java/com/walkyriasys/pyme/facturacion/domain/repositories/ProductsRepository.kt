@@ -19,6 +19,10 @@ class ProductsRepository @Inject constructor(
         return productDao.getProducts(PAGE_SIZE, page * PAGE_SIZE).flowOn(ioThreadDispatcher)
     }
 
+    fun searchProducts(searchQuery: String, page: Int = 0): Flow<List<Product>> {
+        return productDao.searchProducts(searchQuery, PAGE_SIZE, page * PAGE_SIZE).flowOn(ioThreadDispatcher)
+    }
+
     suspend fun addProduct(product: Product): Int = withContext(ioThreadDispatcher) {
         return@withContext productDao.insertProduct(product).toInt()
     }

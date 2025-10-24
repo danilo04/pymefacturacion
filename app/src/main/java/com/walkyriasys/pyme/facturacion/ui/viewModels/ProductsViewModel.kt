@@ -13,7 +13,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,12 +28,20 @@ class ProductsViewModel @Inject constructor(
     private val productsRepository: ProductsRepository
 ) : ViewModel() {
 
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
     private var loadMoreRef: (() -> Unit)? = null
-    private val paginationSource: PagingDataSource<Unit, Product, UiState> = PagingDataSource(
+
+    private val paginationSource: PagingDataSource<String, Product, UiState> = PagingDataSource(
         viewModelScope = viewModelScope,
         backgroundDispatcher = ioThreadDispatcher,
-        loadPage = { _, page ->
-            productsRepository.getProducts(page = page)
+        loadPage = { searchQuery, page ->
+            if (searchQuery.isBlank()) {
+                productsRepository.getProducts(page = page)
+            } else {
+                productsRepository.searchProducts(searchQuery = searchQuery, page = page)
+            }
         },
         builder = { pages ->
             pages.map { page ->
@@ -51,12 +65,27 @@ class ProductsViewModel @Inject constructor(
     @OptIn(FlowPreview::class)
     val uiState: Flow<UiState> = paginationSource.uiState.debounceAndSend(
         timeout = 200,
-        emittedItemCount = 40,
+        emittedItemCount = 20,
         scope = viewModelScope
     )
 
     init {
-        paginationSource.start(Unit)
+        paginationSource.start("")
+        
+        // Listen to search query changes and restart pagination
+        viewModelScope.launch {
+            _searchQuery.collect { query ->
+                paginationSource.start(query)
+            }
+        }
+    }
+
+    fun updateSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
+
+    fun clearSearch() {
+        _searchQuery.value = ""
     }
 
     sealed interface UiState {

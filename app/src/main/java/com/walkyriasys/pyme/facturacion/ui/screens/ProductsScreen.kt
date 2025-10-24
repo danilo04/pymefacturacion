@@ -15,21 +15,34 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -52,10 +65,14 @@ import java.math.BigDecimal
 fun ProductsScreen(navController: NavController) {
     val viewModel = hiltViewModel<ProductsViewModel>()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle(ProductsViewModel.UiState.Loading)
+    val searchQuery = viewModel.searchQuery.collectAsStateWithLifecycle()
 
     ProductList(
         navController = navController,
         state = uiState.value,
+        searchQuery = searchQuery.value,
+        onSearchQueryChange = viewModel::updateSearchQuery,
+        onClearSearch = viewModel::clearSearch,
         onAddProduct = { navController.navigate(Screens.AddProduct.route) },
         onBackPressed = { navController.popBackStack() }
     )
@@ -66,6 +83,9 @@ fun ProductsScreen(navController: NavController) {
 private fun ProductList(
     navController: NavController,
     state: ProductsViewModel.UiState,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
+    onClearSearch: () -> Unit,
     onAddProduct: () -> Unit,
     onBackPressed: () -> Unit,
 ) {
@@ -75,58 +95,116 @@ private fun ProductList(
         navigationIcon = {
             IconButton(onClick = onBackPressed) {
                 Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(R.string.back)
-                            )
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = stringResource(R.string.back)
+                )
             }
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddProduct
             ) {
-                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_product))
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = stringResource(R.string.add_product)
+                )
             }
         }
     ) { paddingValues ->
-        when (state) {
-            is ProductsViewModel.UiState.Loaded -> {
-                val products = state.products
-                val listState = rememberLazyListState()
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(products) { product ->
-                        ProductItem(product = product)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
+            ) {
+                TextField(
+                    value = searchQuery,
+                    onValueChange = onSearchQueryChange,
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text(text = stringResource(R.string.search_products_placeholder)) },
+                    leadingIcon = {
+                        Icon(imageVector = Icons.Default.Search, contentDescription = stringResource(R.string.search_icon))
+                    },
+                    trailingIcon = {
+                        if (searchQuery.isNotBlank()) {
+                            IconButton(
+                                onClick = onClearSearch
+                            ) {
+                                Icon(imageVector = Icons.Default.Clear, contentDescription = stringResource(R.string.clear_icon))
+                            }
+                        }
                     }
-                }
+                )
 
-                listState.OnBottomReached(10) {
-                    state.loadMore()
+                ProductList(state, searchQuery)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProductList(
+    state: ProductsViewModel.UiState,
+    searchQuery: String
+) {
+    when (state) {
+        is ProductsViewModel.UiState.Loaded -> {
+            val products = state.products
+            val listState = rememberLazyListState()
+
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(products) { product ->
+                    ProductItem(product = product)
                 }
             }
 
-            ProductsViewModel.UiState.Loading -> {
-
+            listState.OnBottomReached(10) {
+                state.loadMore()
             }
+        }
 
-            ProductsViewModel.UiState.Empty -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    contentAlignment = Alignment.Center
+        ProductsViewModel.UiState.Loading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    CircularProgressIndicator()
                     Text(
-                        text = stringResource(R.string.no_products_yet),
-                        fontWeight = FontWeight.Bold,
-                        color = androidx.compose.ui.graphics.Color.Gray
+                        text = stringResource(R.string.loading_products),
+                        modifier = Modifier.padding(top = 16.dp),
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
+            }
+        }
+
+        ProductsViewModel.UiState.Empty -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = if (searchQuery.isNotEmpty()) {
+                        stringResource(R.string.no_products_found, searchQuery)
+                    } else {
+                        stringResource(R.string.no_products_yet)
+                    },
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Gray
+                )
             }
         }
     }
@@ -138,7 +216,6 @@ private fun ProductItem(product: ProductItem) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -188,7 +265,6 @@ private fun ProductItem(product: ProductItem) {
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold
                 )
-//            Text(text = "Stock: ${product.stockQuantity ?: "N/A"}")
             }
         }
     }
@@ -229,6 +305,9 @@ fun ProductsScreenPreview() {
         ProductList(
             navController = rememberNavController(),
             state = ProductsViewModel.UiState.Loaded(products = mockProducts) {},
+            searchQuery = "",
+            onSearchQueryChange = {},
+            onClearSearch = {},
             onBackPressed = {},
             onAddProduct = {}
         )
